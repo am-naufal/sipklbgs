@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
@@ -26,13 +27,12 @@ Route::middleware('auth')->group(function () {
 Route::resource('users', UserController::class)->middleware('auth');
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('users', AdminUserController::class);
     Route::resource('siswas', SiswaController::class);
     Route::resource('pembimbings', PembimbingController::class);
     Route::resource('industris', IndustriController::class);
+    Route::resource('laporans', LaporanController::class);
 });
 
 require __DIR__ . '/auth.php';

@@ -1,5 +1,5 @@
-@extends('layouts.adminlte')
-
+@extends('layouts.app')
+@section('title', 'Edit Pembimbing')
 
 @section('content')
     <div class="container mx-auto p-4">

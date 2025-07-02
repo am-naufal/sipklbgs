@@ -16,7 +16,6 @@ class DashboardController extends Controller
         $totalSiswas = Siswa::count();
         $totalIndustris = Industri::count();
         $totalPembimbings = Pembimbing::count();
-
         return view('admin.dashboard', compact('totalUsers', 'totalSiswas', 'totalIndustris', 'totalPembimbings'));
     }
 }
