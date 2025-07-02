@@ -67,6 +67,11 @@ class IndustriController extends Controller
         return redirect()->route('admin.industris.index')->with('success', 'Data industri berhasil diperbarui');
     }
 
+    public function show(Industri $industri)
+    {
+        return view('admin.industris.show', compact('industri'));
+    }
+
     public function destroy(Industri $industri)
     {
         $industri->delete();
