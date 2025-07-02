@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Industri extends Model
 {
     protected $fillable = [
+        'id',
         'user_id',
         'nama',
         'alamat',

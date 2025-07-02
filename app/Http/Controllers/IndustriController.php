@@ -3,19 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Industri;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class IndustriController extends Controller
 {
     public function index()
     {
         $industris = Industri::all();
-        return view('industris.index', compact('industris'));
+        return view('admin.industris.index', compact('industris'));
     }
 
     public function create()
     {
-        return view('industris.create');
+        return view('admin.industris.create');
     }
 
     public function store(Request $request)
@@ -28,15 +30,25 @@ class IndustriController extends Controller
             'jabatan_pj' => 'required',
             'telepon_pj' => 'required',
         ]);
-        Industri::create($validated);
+        $makeid = 'ind' . (Industri::latest()->first()->id ?? 0) + 1;
+        $User = User::create([
+            'name' => $request->nama,
+            'email' => $request->email,
+            'password' => Hash::make('password'),
+            'role' => 'industri',
+            'industri_id' => $makeid,
+        ]);
+        dd($User);
+        $Industri = Industri::create($validated);
+        $Industri->user_id = $User->id;
+        $Industri->save();
 
-        $validated['user_id'] = auth()->user->id;
-        return redirect()->route('industris.index')->with('success', 'Data industri berhasil ditambahkan');
+        return redirect()->route('admin.industris.index')->with('success', 'Data industri berhasil ditambahkan');
     }
 
     public function edit(Industri $industri)
     {
-        return view('industris.edit', compact('industri'));
+        return view('admin.industris.edit', compact('industri'));
     }
 
     public function update(Request $request, Industri $industri)
@@ -48,15 +60,16 @@ class IndustriController extends Controller
             'nama_pj' => 'required',
             'jabatan_pj' => 'required',
             'telepon_pj' => 'required',
+
         ]);
 
         $industri->update($validated);
-        return redirect()->route('industris.index')->with('success', 'Data industri berhasil diperbarui');
+        return redirect()->route('admin.industris.index')->with('success', 'Data industri berhasil diperbarui');
     }
 
     public function destroy(Industri $industri)
     {
         $industri->delete();
-        return redirect()->route('industris.index')->with('success', 'Data industri berhasil dihapus');
+        return redirect()->route('admin.industris.index')->with('success', 'Data industri berhasil dihapus');
     }
 }
