@@ -10,6 +10,10 @@ class Penempatan extends Model
         'siswa_id',
         'industri_id',
         'pembimbing_id',
+        'status',
+        'tanggal_penempatan',
+        'tanggal_selesai',
+        'keterangan',
     ];
 
     public function siswa()

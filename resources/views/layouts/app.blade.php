@@ -5,9 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'SIPKL')</title>
+    <title>SI-PKL | @yield('title', 'SIPKL')</title>
+    <link rel="icon" type="image/png" href="{{ asset('assets/img/logopkl.png') }}">
+
+    <!-- Bootstrap CSS -->
     <!-- Meta, CSS, dan link lainnya -->
-    <meta name="author" content="ColorlibHQ" />
     <meta name="description"
         content="This is a system for managing internship programs, including student and mentor management, industry partnerships, and reporting.">
     <meta name="keywords" content="bootstrap 5, admin dashboard, colorlibhq">
@@ -20,6 +22,8 @@
     <!-- Font Awesome -->
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('assets/css/adminlte.min.css') }}">
     @stack('styles')

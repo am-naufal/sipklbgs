@@ -77,4 +77,9 @@ class IndustriController extends Controller
         $industri->delete();
         return redirect()->route('admin.industris.index')->with('success', 'Data industri berhasil dihapus');
     }
+    public function list()
+    {
+        $industris = Industri::all();
+        return view('siswa.industris.list', compact('industris'));
+    }
 }

@@ -11,7 +11,7 @@ class LaporanController extends Controller
      */
     public function index()
     {
-        //
+        return view('laporan.index');
     }
 
     /**
@@ -19,7 +19,7 @@ class LaporanController extends Controller
      */
     public function create()
     {
-        //
+        return view('laporan.create');
     }
 
     /**
@@ -27,7 +27,17 @@ class LaporanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validasi dan simpan laporan
+        $validatedData = $request->validate([
+            'judul' => 'required|string|max:255',
+            'isi' => 'required|string',
+            'tanggal' => 'required|date',
+        ]);
+
+        // Simpan laporan ke database (model belum dibuat)
+        // Laporan::create($validatedData);
+
+        return redirect()->route('laporan.index')->with('success', 'Laporan berhasil dibuat.');
     }
 
     /**

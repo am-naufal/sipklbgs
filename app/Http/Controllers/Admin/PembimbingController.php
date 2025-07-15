@@ -25,10 +25,10 @@ class PembimbingController extends Controller
     public function store(Request $request)
     {
         $validatedUser = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
         ]);
+        $validatedUser['name'] = $request->nama_lengkap;
+        $validatedUser['email'] = $request->email; // contoh email, bisa disesuaikan
         $validatedUser['role'] = 'pembimbing';
         $validatedUser['password'] = Hash::make($validatedUser['password']);
         $user = User::create($validatedUser);
@@ -61,15 +61,19 @@ class PembimbingController extends Controller
     public function update(Request $request, Pembimbing $pembimbing)
     {
         $validatedUser = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $pembimbing->user_id,
             'password' => 'nullable|string|min:8|confirmed',
         ]);
-        if ($validatedUser['password']) {
+
+        $validatedUser['name'] = $request->nama_lengkap;
+        $validatedUser['email'] = $request->email;
+        $validatedUser['role'] = 'pembimbing'; // opsional, bisa dihilangkan jika tidak perlu diubah
+
+        if (!empty($validatedUser['password'])) {
             $validatedUser['password'] = Hash::make($validatedUser['password']);
         } else {
             unset($validatedUser['password']);
         }
+
         $pembimbing->user->update($validatedUser);
 
         $validatedPembimbing = $request->validate([
@@ -80,9 +84,12 @@ class PembimbingController extends Controller
             'jabatan' => 'required|string|max:100',
             'alamat' => 'required|string',
         ]);
+
         $pembimbing->update($validatedPembimbing);
+
         return Redirect::route('admin.pembimbings.index')->with('success', 'Pembimbing berhasil diupdate.');
     }
+
 
     public function destroy(Pembimbing $pembimbing)
     {
