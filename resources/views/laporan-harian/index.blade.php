@@ -6,25 +6,27 @@
             <div class="col-12">
                 <div class="card shadow-lg border-0 rounded-3">
                     <!-- Card Header -->
-                    @if (session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="bi bi-exclamation-octagon me-2"></i>
-                            {{ session('error') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    @endif
+                    {{-- @dd($laporans) --}}
                     <div class="card-header bg-primary text-white py-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h2 class="h4 mb-0 fw-bold">
-                                    <i class="bi bi-journal-text me-2"></i>Daftar Laporan Harian
+                                    <i class="fas fa-clipboard-list me-2"></i>Daftar Laporan Harian
                                 </h2>
-                                <p class="mb-0 small opacity-75">Rekap seluruh laporan kegiatan harian</p>
+                                <p class="mb-0 small opacity-75">
+                                    @if (auth()->user()->role === 'siswa')
+                                        Laporan harian Anda
+                                    @elseif(in_array(auth()->user()->role, ['pembimbing', 'industri']))
+                                        Laporan siswa bimbingan Anda
+                                    @else
+                                        Semua laporan harian
+                                    @endif
+                                </p>
                             </div>
-                            @if (in_array(auth()->user()->role, ['admin', 'siswa']))
+                            @if (auth()->user()->role === 'siswa')
                                 <a href="{{ route('laporan-harian.create') }}"
                                     class="btn btn-light text-primary rounded-pill px-4">
-                                    <i class="bi bi-plus-lg me-2"></i>Tambah Laporan
+                                    <i class="fas fa-plus-circle me-2"></i>Tambah Laporan
                                 </a>
                             @endif
                         </div>
@@ -32,17 +34,32 @@
 
                     <!-- Card Body -->
                     <div class="card-body p-0">
+                        @if (session('error'))
+                            <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                {{ session('error') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
+                            </div>
+                        @endif
+
                         @if ($laporans->isEmpty())
                             <div class="text-center py-5">
                                 <div class="mb-4">
-                                    <i class="bi bi-journal-x display-4 text-muted"></i>
+                                    <i class="fas fa-clipboard fa-4x text-muted"></i>
                                 </div>
                                 <h3 class="h4 text-muted mb-3">Belum Ada Laporan</h3>
-                                <p class="text-muted mb-4">Tidak ada laporan harian yang ditemukan.</p>
-                                @if (in_array(auth()->user()->role, ['admin', 'siswa']))
+                                <p class="text-muted mb-4">
+                                    @if (auth()->user()->role === 'siswa')
+                                        Anda belum membuat laporan harian
+                                    @else
+                                        Tidak ada laporan yang ditemukan
+                                    @endif
+                                </p>
+                                @if (auth()->user()->role === 'siswa')
                                     <a href="{{ route('laporan-harian.create') }}"
                                         class="btn btn-primary px-4 rounded-pill">
-                                        <i class="bi bi-plus-lg me-2"></i>Buat Laporan Pertama
+                                        <i class="fas fa-plus-circle me-2"></i>Buat Laporan Pertama
                                     </a>
                                 @endif
                             </div>
@@ -51,73 +68,91 @@
                                 <table class="table table-hover align-middle mb-0">
                                     <thead class="table-light">
                                         <tr>
-                                            <th class="ps-4 py-3 text-uppercase fw-semibold">Siswa</th>
-                                            <th class="py-3 text-uppercase fw-semibold">Industri</th>
-                                            <th class="py-3 text-uppercase fw-semibold">Pembimbing</th>
-                                            <th class="py-3 text-uppercase fw-semibold">Status</th>
-                                            <th class="py-3 text-uppercase fw-semibold">Keterangan</th>
-                                            <th class="py-3 text-uppercase fw-semibold">Tanggal</th>
-                                            <th class="pe-4 py-3 text-uppercase fw-semibold text-center">Aksi</th>
+                                            @if (in_array(auth()->user()->role, ['admin', 'pembimbing', 'industri']))
+                                                <th class="ps-4 py-3">Siswa</th>
+                                            @endif
+                                            <th class="py-3">Industri</th>
+                                            @if (auth()->user()->role === 'admin')
+                                                <th class="py-3">Pembimbing</th>
+                                            @endif
+                                            <th class="py-3">Tanggal</th>
+                                            <th class="py-3">Status</th>
+                                            <th class="py-3">Keterangan</th>
+                                            <th class="pe-4 py-3 text-center">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+
                                         @foreach ($laporans as $laporan)
                                             <tr>
-                                                <td class="ps-4 py-3">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="avatar-sm me-3">
-                                                            <div class="avatar-title bg-light rounded-circle text-primary">
-                                                                {{ substr($laporan->siswa->name ?? '?', 0, 1) }}
-                                                            </div>
-                                                        </div>
-                                                        <div>
-                                                            <h6 class="mb-0 fw-semibold">{{ $laporan->siswa->name ?? '-' }}
-                                                            </h6>
-                                                            <small class="text-muted">NIS:
-                                                                {{ $laporan->siswa->nisn ?? '-' }}</small>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="py-3">
-                                                    <div class="d-flex align-items-center">
-                                                        <i class="bi bi-building me-2 text-primary"></i>
-                                                        <span>{{ $laporan->penempatan->industri->nama ?? '-' }}</span>
-                                                    </div>
-                                                </td>
-                                                <td class="py-3">
-                                                    @if ($laporan->penempatan->pembimbing ?? false)
+                                                @if (in_array(auth()->user()->role, ['admin', 'pembimbing', 'industri']))
+                                                    <td class="ps-4 py-3">
                                                         <div class="d-flex align-items-center">
                                                             <div class="avatar-sm me-3">
                                                                 <div
                                                                     class="avatar-title bg-light rounded-circle text-primary">
-                                                                    {{ substr($laporan->penempatan->pembimbing->nama, 0, 1) }}
+                                                                    {{ substr($laporan->siswa->name ?? '?', 0, 1) }}
                                                                 </div>
                                                             </div>
                                                             <div>
-                                                                <h6 class="mb-0">
-                                                                    {{ $laporan->penempatan->pembimbing->nama }}</h6>
-                                                                <small class="text-muted">Pembimbing</small>
+                                                                <h6 class="mb-0 fw-semibold">
+                                                                    {{ $laporan->siswa->name ?? '-' }}</h6>
+                                                                <small class="text-muted">NIS:
+                                                                    {{ $laporan->siswa->nisn ?? '-' }}</small>
                                                             </div>
                                                         </div>
-                                                    @else
-                                                        <span class="text-muted">-</span>
-                                                    @endif
+                                                    </td>
+                                                @endif
+                                                <td class="py-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fas fa-building me-2 text-primary"></i>
+                                                        <span>{{ $laporan->penempatan->industri->nama ?? '-' }}</span>
+                                                    </div>
+                                                </td>
+                                                @if (auth()->user()->role === 'admin')
+                                                    <td class="py-3">
+                                                        @if ($laporan->penempatan->pembimbing ?? false)
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="avatar-sm me-3">
+                                                                    <div
+                                                                        class="avatar-title bg-light rounded-circle text-primary">
+                                                                        {{ substr($laporan->penempatan->pembimbing->nama, 0, 1) }}
+                                                                    </div>
+                                                                </div>
+                                                                <div>
+                                                                    <h6 class="mb-0">
+                                                                        {{ $laporan->penempatan->pembimbing->nama }}</h6>
+                                                                    <small class="text-muted">Pembimbing</small>
+                                                                </div>
+                                                            </div>
+                                                        @else
+                                                            <span class="text-muted">-</span>
+                                                        @endif
+                                                    </td>
+                                                @endif
+                                                <td class="py-3">
+                                                    <div class="d-flex flex-column">
+                                                        <span
+                                                            class="fw-medium">{{ $laporan->created_at->format('d M Y') }}</span>
+                                                        <small
+                                                            class="text-muted">{{ $laporan->created_at->diffForHumans() }}</small>
+                                                    </div>
                                                 </td>
                                                 <td class="py-3">
                                                     @if ($laporan->status_validasi == 'valid')
                                                         <span
                                                             class="badge bg-success bg-opacity-10 text-success py-2 px-3 rounded-pill">
-                                                            <i class="bi bi-check-circle me-1"></i> Valid
+                                                            <i class="fas fa-check-circle me-1"></i> Valid
                                                         </span>
                                                     @elseif($laporan->status_validasi == 'tidak valid')
                                                         <span
                                                             class="badge bg-danger bg-opacity-10 text-danger py-2 px-3 rounded-pill">
-                                                            <i class="bi bi-x-circle me-1"></i> Tidak Valid
+                                                            <i class="fas fa-times-circle me-1"></i> Tidak Valid
                                                         </span>
                                                     @else
                                                         <span
                                                             class="badge bg-warning bg-opacity-10 text-warning py-2 px-3 rounded-pill">
-                                                            <i class="bi bi-hourglass me-1"></i>
+                                                            <i class="fas fa-clock me-1"></i>
                                                             {{ ucfirst($laporan->status_validasi) }}
                                                         </span>
                                                     @endif
@@ -127,27 +162,31 @@
                                                         {{ $laporan->keterangan_validasi ?? '-' }}
                                                     </div>
                                                 </td>
-                                                <td class="py-3">
-                                                    <div class="d-flex flex-column">
-                                                        <span
-                                                            class="fw-medium">{{ $laporan->created_at->format('d M Y') }}</span>
-                                                        <small
-                                                            class="text-muted">{{ $laporan->created_at->diffForHumans() }}</small>
-                                                    </div>
-                                                </td>
                                                 <td class="pe-4 py-3 text-center">
                                                     <div class="d-flex justify-content-center gap-2">
                                                         <a href="{{ route('laporan-harian.show', $laporan->id) }}"
                                                             class="btn btn-sm btn-outline-primary rounded-pill px-3"
                                                             data-bs-toggle="tooltip" title="Lihat Detail">
-                                                            <i class="bi bi-eye"></i>
+                                                            <i class="fas fa-eye"></i>
                                                         </a>
-                                                        @if (in_array(auth()->user()->role, ['admin', 'siswa']))
+                                                        @if (auth()->user()->role === 'siswa' && $laporan->status_validasi == 'menunggu')
                                                             <a href="{{ route('laporan-harian.edit', $laporan->id) }}"
                                                                 class="btn btn-sm btn-outline-secondary rounded-pill px-3"
                                                                 data-bs-toggle="tooltip" title="Edit">
-                                                                <i class="bi bi-pencil"></i>
+                                                                <i class="fas fa-edit"></i>
                                                             </a>
+                                                        @endif
+                                                        @if (auth()->user()->role === 'admin')
+                                                            <button class="btn btn-sm btn-outline-success rounded-pill px-3"
+                                                                data-bs-toggle="tooltip" title="Validasi"
+                                                                onclick="validasiLaporan({{ $laporan->id }}, 'valid')">
+                                                                <i class="fas fa-check"></i>
+                                                            </button>
+                                                            <button class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                                                data-bs-toggle="tooltip" title="Tolak"
+                                                                onclick="validasiLaporan({{ $laporan->id }}, 'tidak valid')">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
                                                         @endif
                                                     </div>
                                                 </td>
@@ -159,7 +198,6 @@
                         @endif
                     </div>
 
-                    <!-- Pagination -->
                     @if ($laporans->hasPages())
                         <div class="card-footer bg-transparent border-top py-3">
                             <div class="d-flex justify-content-between align-items-center">
@@ -200,6 +238,8 @@
 
         .table th {
             font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .table td {
@@ -214,6 +254,10 @@
         .card-header {
             border-bottom: none;
         }
+
+        .badge {
+            font-weight: 500;
+        }
     </style>
 @endpush
 
@@ -226,5 +270,33 @@
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
         });
+
+        // Validation function for admin
+        function validasiLaporan(id, status) {
+            if (confirm(`Apakah Anda yakin ingin ${status === 'valid' ? 'memvalidasi' : 'menolak'} laporan ini?`)) {
+                fetch(`/laporan-harian/${id}/validasi`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            status: status
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert('Gagal memvalidasi laporan');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Terjadi kesalahan');
+                    });
+            }
+        }
     </script>
 @endpush

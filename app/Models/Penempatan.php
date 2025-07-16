@@ -30,4 +30,8 @@ class Penempatan extends Model
     {
         return $this->belongsTo(Pembimbing::class);
     }
+    public function laporanHarian()
+    {
+        return $this->hasMany(LaporanHarian::class);
+    }
 }

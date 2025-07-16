@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Laporan;
+use App\Models\LaporanHarian;
 use App\Models\Penempatan;
 use App\Models\Siswa;
 use Carbon\Carbon;
@@ -36,10 +37,17 @@ class LaporanHarianController extends Controller
                 ->latest()
                 ->paginate($perPage);
         } elseif ($user->role === 'siswa') {
-            $laporans = Laporan::where('siswa_id', $user->siswa->id)
+            if ($user->role !== 'siswa') {
+                return redirect()->route('dashboard')
+                    ->with('error', 'Anda tidak memiliki akses ke halaman ini');
+            }
+            $siswa = Siswa::where('user_id', $user->id)->first();
+            // Ambil data laporan harian siswa
+            $laporans = LaporanHarian::where('siswa_id', $siswa->id)
                 ->with(['penempatan.industri', 'penempatan.pembimbing'])
                 ->latest()
                 ->paginate($perPage);
+            return view('laporan-harian.index', compact('laporans'));
         } else {
             $laporans = Laporan::query()->paginate($perPage); // Empty paginated collection
         }
@@ -63,35 +71,34 @@ class LaporanHarianController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'file_laporan' => 'required|file|mimes:pdf,doc,docx|max:2048',
             'penempatan_id' => 'required|exists:penempatans,id',
+            'kegiatan' => 'required|string|max:2000',
+            'catatan' => 'nullable|string'
         ]);
 
-        $filePath = $request->file('file_laporan')->store('laporan_harian');
-
-        Laporan::create([
-            'siswa_id' => Auth::user()->siswa->id,
+        LaporanHarian::create([
+            'siswa_id' => $request->siswa_id,
             'penempatan_id' => $request->penempatan_id,
-            'file_path' => $filePath,
-            'status_validasi' => 'menunggu',
-            'keterangan_validasi' => '',
+            'kegiatan' => $request->kegiatan,
+            'catatan' => $request->catatan,
+            'tanggal' => now(),
+            'status_validasi' => 'menunggu'
         ]);
 
-        return redirect()->route('laporan-harian.index')->with('success', 'Laporan harian berhasil diunggah.');
+        return redirect()->route('laporan-harian.index')
+            ->with('success', 'Laporan harian berhasil dikirim!');
     }
 
-    public function show(Laporan $laporan)
+    public function show(LaporanHarian $laporanharian)
     {
         // Simple authorization check
-        $user = \Illuminate\Support\Facades\Auth::user();
-        if (
-            $user->role === 'admin' ||
-            ($user->role === 'pembimbing' && $laporan->penempatan->pembimbing_id === $user->pembimbing->id) ||
-            ($user->role === 'industri' && $laporan->penempatan->industri_id === $user->industri->id) ||
-            ($user->role === 'siswa' && $laporan->siswa_id === $user->siswa->id)
-        ) {
-            return view('laporan-harian.show', compact('laporan'));
+        if ($laporanharian->siswa_id) {
+            return redirect()->route('laporan-harian.index')
+                ->with('error', 'Anda tidak memiliki akses ke laporan ini');
         }
-        abort(403, 'Unauthorized action.');
+        $laporan = LaporanHarian::with(['siswa', 'penempatan.industri', 'penempatan.pembimbing'])
+            ->findOrFail($laporanharian->id);
+        dd($laporan);
+        return view('laporan-harian.show', compact('laporan'));
     }
 }
