@@ -89,16 +89,11 @@ class LaporanHarianController extends Controller
             ->with('success', 'Laporan harian berhasil dikirim!');
     }
 
-    public function show(LaporanHarian $laporanharian)
+    public function show(LaporanHarian $laporanharian, $id)
     {
-        // Simple authorization check
-        if ($laporanharian->siswa_id) {
-            return redirect()->route('laporan-harian.index')
-                ->with('error', 'Anda tidak memiliki akses ke laporan ini');
-        }
+
         $laporan = LaporanHarian::with(['siswa', 'penempatan.industri', 'penempatan.pembimbing'])
-            ->findOrFail($laporanharian->id);
-        dd($laporan);
+            ->findOrFail($id);
         return view('laporan-harian.show', compact('laporan'));
     }
 }

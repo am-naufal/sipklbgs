@@ -8,25 +8,42 @@ class Laporan extends Model
 {
     protected $fillable = [
         'siswa_id',
-        'industri_id',
-        'pembimbing_id',
+        'penempatan_id',
+        'judul',
         'file_path',
-        'status_validasi',
-        'keterangan_validasi',
+        'catatan',
+        'status',
+        'catatan_revisi'
     ];
-    /**
-     * Relasi ke model Siswa
-     */
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
+    ];
+
+    public function getStatusLabelAttribute()
+    {
+        $statuses = [
+            'menunggu' => ['Menunggu Validasi', 'warning'],
+            'valid' => ['Diterima', 'success'],
+            'revisi' => ['Perlu Revisi', 'danger']
+        ];
+
+        return $statuses[$this->status] ?? ['Unknown', 'secondary'];
+    }
+
     public function siswa()
     {
         return $this->belongsTo(Siswa::class);
     }
 
-    /**
-     * Relasi ke model Penempatan
-     */
     public function penempatan()
     {
         return $this->belongsTo(Penempatan::class);
+    }
+
+    public function pembimbing()
+    {
+        return $this->through('penempatan')->has('pembimbing');
     }
 }

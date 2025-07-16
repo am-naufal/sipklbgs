@@ -69,6 +69,7 @@ class IndustriController extends Controller
 
     public function show(Industri $industri)
     {
+
         return view('admin.industris.show', compact('industri'));
     }
 

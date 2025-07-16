@@ -77,6 +77,7 @@
                                             @endif
                                             <th class="py-3">Tanggal</th>
                                             <th class="py-3">Status</th>
+                                            <th class="py-3">Kegiatan</th>
                                             <th class="py-3">Keterangan</th>
                                             <th class="pe-4 py-3 text-center">Aksi</th>
                                         </tr>
@@ -156,6 +157,11 @@
                                                             {{ ucfirst($laporan->status_validasi) }}
                                                         </span>
                                                     @endif
+                                                </td>
+                                                <td class="py-3">
+                                                    <div class="text-truncate" style="max-width: 200px;">
+                                                        {{ $laporan->kegiatan ?? '-' }}
+                                                    </div>
                                                 </td>
                                                 <td class="py-3">
                                                     <div class="text-truncate" style="max-width: 200px;">

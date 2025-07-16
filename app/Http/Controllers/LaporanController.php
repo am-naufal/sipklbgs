@@ -2,73 +2,71 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Laporan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
-class LaporanController extends Controller
+class LaporanPKLController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        return view('laporan.index');
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        return view('laporan.create');
+        return view('laporan-pkl.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        // Validasi dan simpan laporan
-        $validatedData = $request->validate([
+        $request->validate([
             'judul' => 'required|string|max:255',
-            'isi' => 'required|string',
-            'tanggal' => 'required|date',
+            'file' => 'required|file|mimes:doc,docx,pdf|max:2048',
+            'catatan' => 'nullable|string'
         ]);
 
-        // Simpan laporan ke database (model belum dibuat)
-        // Laporan::create($validatedData);
+        $filePath = $request->file('file')->store('laporan-pkl');
 
-        return redirect()->route('laporan.index')->with('success', 'Laporan berhasil dibuat.');
+        Laporan::create([
+            'siswa_id' => auth()->user()->siswa->id,
+            'penempatan_id' => auth()->user()->siswa->penempatan->id,
+            'judul' => $request->judul,
+            'file_path' => $filePath,
+            'catatan' => $request->catatan,
+            'status' => 'menunggu',
+            'catatan_revisi' => ''
+        ]);
+
+        return redirect()->route('laporan-pkl.index')
+            ->with('success', 'Laporan berhasil diupload!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function index()
     {
-        //
+        $laporans = Laporan::where('siswa_id', auth()->user()->siswa->id)
+            ->latest()
+            ->paginate(10);
+
+        return view('laporan-pkl.index', compact('laporans'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function show(Laporan $laporan)
     {
-        //
+        $this->authorize('view', $laporan);
+
+        return view('laporan-pkl.show', compact('laporan'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function revisi(Request $request, Laporan $laporan)
     {
-        //
-    }
+        $this->authorize('revisi', $laporan);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $request->validate([
+            'catatan_revisi' => 'required|string',
+            'status' => 'required|in:valid,revisi'
+        ]);
+
+        $laporan->update([
+            'catatan_revisi' => $request->catatan_revisi,
+            'status' => $request->status
+        ]);
+
+        return back()->with('success', 'Catatan revisi berhasil disimpan');
     }
 }
