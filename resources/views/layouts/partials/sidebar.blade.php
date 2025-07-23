@@ -57,7 +57,14 @@
                         <a href="{{ route('admin.laporans.index') }}"
                             class="nav-link {{ request()->is('admin/laporans*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-file-alt"></i>
-                            <p>Laporan</p>
+                            <p>Laporan Akhir</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.laporan-harian.index') }}"
+                            class="nav-link {{ request()->is('admin/laporan*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-file-alt"></i>
+                            <p>Log book siswa</p>
                         </a>
                     </li>
 
@@ -95,9 +102,15 @@
                     </a>
                     <li class="nav-item">
                         <a href="/siswa/laporan-harian"
-                            class="nav-link {{ request()->is('siswa/laporan*') ? 'active' : '' }}">
+                            class="nav-link {{ request()->is('siswa/laporan-harian*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-file-alt"></i>
                             <p>Laporan Harian</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/siswa/laporan" class="nav-link {{ request()->is('siswa/laporan') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-file-alt"></i>
+                            <p>Laporan Akhir</p>
                         </a>
                     </li>
 
@@ -110,56 +123,42 @@
                 </ul>
 
             </nav>
-        @elseif (Auth::user()->hasRole('pembimbing'))
+        @elseif (Auth::user()->role == 'pembimbing')
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                     data-accordion="false">
                     <li class="nav-item">
-                        <a href="{{ route('admin.dashboard') }}"
-                            class="nav-link {{ request()->is('admin/dashboard') ? 'active' : '' }}">
+                        <a href="{{ route('pembimbing.dashboard') }}"
+                            class="nav-link {{ request()->is('pembimbing/dashboard') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-tachometer-alt"></i>
                             <p>Dashboard</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('admin.industris.index') }}"
-                            class="nav-link {{ request()->is('admin/industris*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-industry"></i>
-                            <p>Industri</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('admin.users.index') }}"
-                            class="nav-link {{ request()->is('admin/users*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-users"></i>
-                            <p>Users</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('admin.siswas.index') }}"
-                            class="nav-link {{ request()->is('admin/siswas*') ? 'active' : '' }}">
+                        <a href="{{ route('pembimbing.siswas.index') }}"
+                            class="nav-link {{ request()->is('pembimbing/siswas*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-user-graduate"></i>
-                            <p>Siswa</p>
+                            <p>Siswa Bimbingan</p>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('admin.pembimbings.index') }}"
-                            class="nav-link {{ request()->is('admin/pembimbings*') ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-chalkboard-teacher"></i>
-                            <p>Pembimbing</p>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('admin.penempatans.index') }}"
-                            class="nav-link {{ request()->is('admin/penempatans*') ? 'active' : '' }}">
+                        <a href="{{ route('pembimbing.penempatans.index') }}"
+                            class="nav-link {{ request()->is('pembimbing/penempatans*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-map-marker-alt"></i>
                             <p>Penempatan</p>
                         </a>
                     <li class="nav-item">
-                        <a href="{{ route('admin.laporans.index') }}"
-                            class="nav-link {{ request()->is('admin/laporans*') ? 'active' : '' }}">
+                        <a href="{{ route('pembimbing.laporans.index') }}"
+                            class="nav-link {{ request()->is('pembimbing/laporans*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-file-alt"></i>
-                            <p>Laporan</p>
+                            <p>Laporan Akhir</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('pembimbing.laporans.index') }}"
+                            class="nav-link {{ request()->is('pembimbing/laporans*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-file-alt"></i>
+                            <p>Log Book Siswa</p>
                         </a>
                     </li>
 

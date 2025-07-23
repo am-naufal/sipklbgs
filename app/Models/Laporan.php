@@ -12,8 +12,8 @@ class Laporan extends Model
         'judul',
         'file_path',
         'catatan',
-        'status',
-        'catatan_revisi'
+        'status_validasi',
+        'keterangan_revisi'
     ];
 
     protected $casts = [

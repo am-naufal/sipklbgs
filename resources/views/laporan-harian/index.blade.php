@@ -68,6 +68,7 @@
                                 <table class="table table-hover align-middle mb-0">
                                     <thead class="table-light">
                                         <tr>
+                                            <th class="py-3">No</th>
                                             @if (in_array(auth()->user()->role, ['admin', 'pembimbing', 'industri']))
                                                 <th class="ps-4 py-3">Siswa</th>
                                             @endif
@@ -83,21 +84,21 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-
                                         @foreach ($laporans as $laporan)
                                             <tr>
+                                                <td class="py-3">{{ $loop->iteration }}</td>
                                                 @if (in_array(auth()->user()->role, ['admin', 'pembimbing', 'industri']))
                                                     <td class="ps-4 py-3">
                                                         <div class="d-flex align-items-center">
                                                             <div class="avatar-sm me-3">
                                                                 <div
                                                                     class="avatar-title bg-light rounded-circle text-primary">
-                                                                    {{ substr($laporan->siswa->name ?? '?', 0, 1) }}
+                                                                    {{ substr($laporan->siswa->nama, 0, 1) }}
                                                                 </div>
                                                             </div>
                                                             <div>
                                                                 <h6 class="mb-0 fw-semibold">
-                                                                    {{ $laporan->siswa->name ?? '-' }}</h6>
+                                                                    {{ $laporan->siswa->nama ?? '-' }}</h6>
                                                                 <small class="text-muted">NIS:
                                                                     {{ $laporan->siswa->nisn ?? '-' }}</small>
                                                             </div>
@@ -183,6 +184,11 @@
                                                             </a>
                                                         @endif
                                                         @if (auth()->user()->role === 'admin')
+                                                            <a href="{{ route('admin.laporan-harian.show', $laporan->id) }}"
+                                                                class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                                                data-bs-toggle="tooltip" title="Lihat Detail">
+                                                                <i class="fas fa-eye"></i>
+                                                            </a>
                                                             <button class="btn btn-sm btn-outline-success rounded-pill px-3"
                                                                 data-bs-toggle="tooltip" title="Validasi"
                                                                 onclick="validasiLaporan({{ $laporan->id }}, 'valid')">
@@ -223,7 +229,7 @@
     </div>
 @endsection
 
-@push('css')
+@push('styles')
     <style>
         .avatar-sm {
             width: 36px;
@@ -267,7 +273,7 @@
     </style>
 @endpush
 
-@push('js')
+@push('scripts')
     <script>
         // Enable tooltips
         document.addEventListener('DOMContentLoaded', function() {

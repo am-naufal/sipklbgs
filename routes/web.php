@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\PenempatanController;
 use App\Http\Controllers\Siswa\PenempatanController\PenempatanController as SiswaPenempatanController;
 use App\Http\Controllers\IndustriController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\LaporanHarianController;
 use App\Models\Industri;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -35,7 +36,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('pembimbings', PembimbingController::class);
     Route::resource('industris', IndustriController::class);
     Route::resource('laporans', LaporanController::class);
+    Route::get('/laporans/download', [LaporanController::class, 'download'])->name('laporans.download');
     Route::resource('penempatans', PenempatanController::class);
+    Route::resource('laporan-harian', LaporanHarianController::class);
+    Route::get('laporan-harian/siswa/{siswa_id}', [LaporanHarianController::class, 'showBySiswa'])->name('laporan-harian.by-siswa');
 });
 
 Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->group(function () {
@@ -45,8 +49,23 @@ Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'siswaDestroy'])->name('profile.destroy');
     Route::get('/list-industri', [IndustriController::class, 'list'])->name('siswa.list-industri');
     Route::resource('penempatans', \App\Http\Controllers\Siswa\PenempatanController::class);
+    Route::resource('laporan-harian', \App\Http\Controllers\Siswa\LaporanHarianController::class);
     Route::resource('laporan-harian', \App\Http\Controllers\LaporanHarianController::class);
+    Route::get('/laporan', [LaporanController::class, 'indexSiswa'])->name('laporan.index');
+    Route::get('/laporan/create', [LaporanController::class, 'create'])->name('laporan.create');
+    Route::post('/laporan', [LaporanController::class, 'store'])->name('laporan.store');
+    Route::get('/laporan/{laporan}/edit', [LaporanController::class, 'edit'])->name('laporan.edit');
+    Route::put('/laporan/{laporan}', [LaporanController::class, 'update'])->name('laporan.update');
+    Route::delete('/laporan/{laporan}', [LaporanController::class, 'destroy'])->name('laporan.destroy');
+    Route::get('/laporan/{laporan}', [LaporanController::class, 'show'])->name('laporan.show');
+    Route::get('/laporan/download/{laporan}', [LaporanController::class, 'download'])->name('laporan.download');
 });
+// Route khusus pembimbing
+Route::middleware(['auth', 'role:pembimbing'])->prefix('pembimbing')->name('pembimbing.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Pembimbing\DashboardController::class, 'index'])->name('dashboard');
+    // Route fitur lain untuk pembimbing dapat ditambahkan di sini
+});
+
 require __DIR__ . '/auth.php';
 Route::get('/clear', function () {
     Artisan::call('config:clear');
