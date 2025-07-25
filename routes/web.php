@@ -11,6 +11,7 @@ use App\Http\Controllers\Siswa\PenempatanController\PenempatanController as Sisw
 use App\Http\Controllers\IndustriController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LaporanHarianController;
+use App\Http\Controllers\Siswa\LaporanHarianController as SiswaLaporanHarianController;
 use App\Models\Industri;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -36,10 +37,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('pembimbings', PembimbingController::class);
     Route::resource('industris', IndustriController::class);
     Route::resource('laporans', LaporanController::class);
-    Route::get('/laporans/download', [LaporanController::class, 'download'])->name('laporans.download');
+    Route::get('/laporans/download/{laporans}', [LaporanController::class, 'adminDownload'])->name('laporans.download');
     Route::resource('penempatans', PenempatanController::class);
+    Route::get('/laporans/show/list/{id}', [LaporanController::class, 'showList'])->name('laporans.show.list');
+    Route::post('/laporans/{id}/validasi', [LaporanController::class, 'validasi'])
+        ->name('laporans.validasi');
     Route::resource('laporan-harian', LaporanHarianController::class);
-    Route::get('laporan-harian/siswa/{siswa_id}', [LaporanHarianController::class, 'showBySiswa'])->name('laporan-harian.by-siswa');
+    Route::get('laporan-harian/siswa/{siswa_id}', [LaporanHarianController::class, 'showBySiswa'])->name('laporan-harian.bysiswa');
+    Route::post('/laporan-harian/{id}/validasi', [LaporanHarianController::class, 'validasi'])
+        ->name('laporan-harian.validasi');
 });
 
 Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->group(function () {
@@ -49,8 +55,7 @@ Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'siswaDestroy'])->name('profile.destroy');
     Route::get('/list-industri', [IndustriController::class, 'list'])->name('siswa.list-industri');
     Route::resource('penempatans', \App\Http\Controllers\Siswa\PenempatanController::class);
-    Route::resource('laporan-harian', \App\Http\Controllers\Siswa\LaporanHarianController::class);
-    Route::resource('laporan-harian', \App\Http\Controllers\LaporanHarianController::class);
+    Route::resource('laporan-harian', SiswaLaporanHarianController::class);
     Route::get('/laporan', [LaporanController::class, 'indexSiswa'])->name('laporan.index');
     Route::get('/laporan/create', [LaporanController::class, 'create'])->name('laporan.create');
     Route::post('/laporan', [LaporanController::class, 'store'])->name('laporan.store');
@@ -73,5 +78,5 @@ Route::get('/clear', function () {
     Artisan::call('view:clear');
     Artisan::call('route:clear');
     Artisan::call('optimize');
-    return 'Cache cleared!';
+    return 'Cache cleared!' . 'ok';
 });

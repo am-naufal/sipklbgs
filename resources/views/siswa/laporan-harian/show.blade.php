@@ -27,7 +27,6 @@
                             </div>
                         </div>
                     </div>
-
                     <!-- Card Body -->
                     <div class="card-body">
                         <!-- Info Penempatan -->
@@ -49,14 +48,12 @@
                                         <div>
                                             <strong>Pembimbing</strong>
                                             <p class="mb-0">
-                                                {{ optional($laporan->penempatan)->pembimbing->nama_lengkap ?? '-' }}
-                                            </p>
+                                                {{ optional($laporan->penempatan)->pembimbing->nama_lengkap ?? '-' }}</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                         <!-- Kegiatan -->
                         <div class="mb-4">
                             <h5 class="fw-semibold mb-3 text-primary">
@@ -66,7 +63,6 @@
                                 {!! nl2br(e($laporan->kegiatan ?? 'Tidak ada kegiatan')) !!}
                             </div>
                         </div>
-
                         <!-- Catatan -->
                         @if ($laporan->catatan)
                             <div class="mb-4">
@@ -78,7 +74,6 @@
                                 </div>
                             </div>
                         @endif
-
                         <!-- Keterangan Validasi -->
                         @if ($laporan->keterangan_validasi)
                             <div class="alert alert-{{ $laporan->status_validasi == 'valid' ? 'success' : 'danger' }}">
@@ -88,7 +83,6 @@
                                 <p class="mb-0">{{ $laporan->keterangan_validasi }}</p>
                             </div>
                         @endif
-
                         <!-- Tombol Kembali -->
                         <div class="d-flex justify-content-end mt-4">
                             <a href="{{ route('laporan-harian.index') }}" class="btn btn-outline-primary rounded-pill px-4">
@@ -102,7 +96,7 @@
     </div>
 @endsection
 
-@push('css')
+@push('styles')
     <style>
         .card {
             border-radius: 12px;

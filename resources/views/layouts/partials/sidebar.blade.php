@@ -62,7 +62,7 @@
                     </li>
                     <li class="nav-item">
                         <a href="{{ route('admin.laporan-harian.index') }}"
-                            class="nav-link {{ request()->is('admin/laporan*') ? 'active' : '' }}">
+                            class="nav-link {{ request()->is('admin/laporan-harian*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-file-alt"></i>
                             <p>Log book siswa</p>
                         </a>

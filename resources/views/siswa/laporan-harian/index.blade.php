@@ -4,15 +4,17 @@
     <div class="container-fluid py-4">
         <div class="row justify-content-center">
             <div class="col-12">
+                <div class="flex justify-content-between align-items-center mb-4">
+                    <a href="{{ route('laporan-harian.create') }}" class="btn btn-primary text-light rounded-pill px-4 ">
+                        <i class="fas fa-plus-circle me-2"></i>Tambah Laporan
+                    </a>
+                </div>
                 <div class="card shadow-lg border-0 rounded-3">
                     <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
                         <h2 class="h4 mb-0 fw-bold">
                             <i class="fas fa-clipboard-list me-2"></i>Daftar Laporan Harian Saya
                         </h2>
-                        <a href="{{ route('siswa.laporan-harian.create') }}"
-                            class="btn btn-light text-primary rounded-pill px-4">
-                            <i class="fas fa-plus-circle me-2"></i>Tambah Laporan
-                        </a>
+
                     </div>
                     <div class="card-body p-0">
                         @if (session('error'))
@@ -31,8 +33,7 @@
                                 </div>
                                 <h3 class="h4 text-muted mb-3">Belum Ada Laporan</h3>
                                 <p class="text-muted mb-4">Anda belum membuat laporan harian</p>
-                                <a href="{{ route('siswa.laporan-harian.create') }}"
-                                    class="btn btn-primary px-4 rounded-pill">
+                                <a href="{{ route('laporan-harian.create') }}" class="btn btn-primary px-4 rounded-pill">
                                     <i class="fas fa-plus-circle me-2"></i>Buat Laporan Pertama
                                 </a>
                             </div>
@@ -62,12 +63,12 @@
                                                     </div>
                                                 </td>
                                                 <td class="py-3">
-                                                    @if ($laporan->status_validasi == 'valid')
+                                                    @if ($laporan->status_validasi == 'diterima')
                                                         <span
                                                             class="badge bg-success bg-opacity-10 text-success py-2 px-3 rounded-pill">
                                                             <i class="fas fa-check-circle me-1"></i> Valid
                                                         </span>
-                                                    @elseif($laporan->status_validasi == 'tidak valid')
+                                                    @elseif($laporan->status_validasi == 'ditolak')
                                                         <span
                                                             class="badge bg-danger bg-opacity-10 text-danger py-2 px-3 rounded-pill">
                                                             <i class="fas fa-times-circle me-1"></i> Tidak Valid
@@ -92,19 +93,19 @@
                                                 </td>
                                                 <td class="pe-4 py-3 text-center">
                                                     <div class="d-flex justify-content-center gap-2">
-                                                        <a href="{{ route('siswa.laporan-harian.show', $laporan->id) }}"
+                                                        <a href="{{ route('laporan-harian.show', $laporan->id) }}"
                                                             class="btn btn-sm btn-outline-primary rounded-pill px-3"
                                                             data-bs-toggle="tooltip" title="Lihat Detail">
                                                             <i class="fas fa-eye"></i>
                                                         </a>
                                                         @if ($laporan->status_validasi == 'menunggu')
-                                                            <a href="{{ route('siswa.laporan-harian.edit', $laporan->id) }}"
+                                                            <a href="{{ route('laporan-harian.edit', $laporan->id) }}"
                                                                 class="btn btn-sm btn-outline-secondary rounded-pill px-3"
                                                                 data-bs-toggle="tooltip" title="Edit">
                                                                 <i class="fas fa-edit"></i>
                                                             </a>
                                                             <form
-                                                                action="{{ route('siswa.laporan-harian.destroy', $laporan->id) }}"
+                                                                action="{{ route('laporan-harian.destroy', $laporan->id) }}"
                                                                 method="POST"
                                                                 onsubmit="return confirm('Apakah Anda yakin ingin menghapus laporan ini?');">
                                                                 @csrf

@@ -22,33 +22,43 @@ class SiswaController extends Controller
         return view('admin.siswas.create');
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
+
     public function store(Request $request)
     {
+        // Validate user data
         $validatedUser = $request->validate([
-            'name' => 'required|string|max:255',
+            'nama' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
         ]);
-        $validatedUser['role'] = 'siswa';
-        $validatedUser['password'] = Hash::make($validatedUser['password']);
-        $user = User::create($validatedUser);
 
+        // Create user
+        $user = User::create([
+            'name' => $validatedUser['nama'],
+            'email' => $validatedUser['email'],
+            'password' => Hash::make($validatedUser['password']),
+            'role' => 'siswa',
+        ]);
+
+        // Validate student data
         $validatedSiswa = $request->validate([
             'nama' => 'required|string|max:255',
             'tempat_lahir' => 'required|string|max:255',
             'tanggal_lahir' => 'required|date',
             'nis' => 'required|string|unique:siswas',
             'nisn' => 'required|string|unique:siswas',
-            'kelas' => 'required|string|max:100',
+            'kelas' => 'required|string|in:X,XI,XII',
             'jurusan' => 'required|in:tb,mm,aphp',
             'alamat' => 'required|string',
-            'status_pkl' => 'required|in:belum_mulai,sedang_berjalan,selesai',
-            'tanggal_mulai' => 'nullable|date',
-            'tanggal_selesai' => 'nullable|date',
-            'tahun_angkatan' => 'required|integer',
         ]);
+
+        // Create student
         $validatedSiswa['user_id'] = $user->id;
         Siswa::create($validatedSiswa);
+
         return Redirect::route('admin.siswas.index')->with('success', 'Siswa berhasil ditambahkan.');
     }
 

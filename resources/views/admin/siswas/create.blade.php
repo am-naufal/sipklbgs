@@ -16,10 +16,10 @@
                 <div class="card-body">
 
                     <div class="mb-3">
-                        <label for="name" class="form-label">Nama Akun</label>
-                        <input type="text" name="name" id="name" class="form-control"
-                            value="{{ old('name') }}">
-                        @error('name')
+                        <label for="nama" class="form-label">Nama Lengkap</label>
+                        <input type="text" name="nama" id="nama" class="form-control"
+                            value="{{ old('nama') }}">
+                        @error('nama')
                             <div class="text-danger small">{{ $message }}</div>
                         @enderror
                     </div>
@@ -47,16 +47,6 @@
                     </div>
 
                     <hr class="my-4">
-
-                    <div class="mb-3">
-                        <label for="nama" class="form-label">Nama Lengkap</label>
-                        <input type="text" name="nama" id="nama" class="form-control"
-                            value="{{ old('nama') }}">
-                        @error('nama')
-                            <div class="text-danger small">{{ $message }}</div>
-                        @enderror
-                    </div>
-
                     <div class="mb-3">
                         <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
                         <input type="text" name="tempat_lahir" id="tempat_lahir" class="form-control"
@@ -95,8 +85,12 @@
 
                     <div class="mb-3">
                         <label for="kelas" class="form-label">Kelas</label>
-                        <input type="text" name="kelas" id="kelas" class="form-control"
-                            value="{{ old('kelas') }}">
+                        <select name="kelas" id="kelas" class="form-select">
+                            <option value="">Pilih kelas</option>
+                            <option value="X" {{ old('kelas') == 'X' ? 'selected' : '' }}>X</option>
+                            <option value="XI" {{ old('kelas') == 'XI' ? 'selected' : '' }}>XI</option>
+                            <option value="XII" {{ old('kelas') == 'XII' ? 'selected' : '' }}>XII</option>
+                        </select>
                         @error('kelas')
                             <div class="text-danger small">{{ $message }}</div>
                         @enderror
@@ -120,50 +114,6 @@
                         <label for="alamat" class="form-label">Alamat</label>
                         <textarea name="alamat" id="alamat" class="form-control" rows="3">{{ old('alamat') }}</textarea>
                         @error('alamat')
-                            <div class="text-danger small">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <hr class="my-4">
-
-                    <div class="mb-3">
-                        <label for="status_pkl" class="form-label">Status PKL</label>
-                        <select name="status_pkl" id="status_pkl" class="form-select">
-                            <option value="belum_mulai" {{ old('status_pkl') == 'belum_mulai' ? 'selected' : '' }}>Belum
-                                Mulai</option>
-                            <option value="sedang_berjalan"
-                                {{ old('status_pkl') == 'sedang_berjalan' ? 'selected' : '' }}>Sedang Berjalan</option>
-                            <option value="selesai" {{ old('status_pkl') == 'selesai' ? 'selected' : '' }}>Selesai
-                            </option>
-                        </select>
-                        @error('status_pkl')
-                            <div class="text-danger small">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="tanggal_mulai" class="form-label">Tanggal Mulai PKL</label>
-                        <input type="date" name="tanggal_mulai" id="tanggal_mulai" class="form-control"
-                            value="{{ old('tanggal_mulai') }}">
-                        @error('tanggal_mulai')
-                            <div class="text-danger small">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="tanggal_selesai" class="form-label">Tanggal Selesai PKL</label>
-                        <input type="date" name="tanggal_selesai" id="tanggal_selesai" class="form-control"
-                            value="{{ old('tanggal_selesai') }}">
-                        @error('tanggal_selesai')
-                            <div class="text-danger small">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="tahun_angkatan" class="form-label">Tahun Angkatan</label>
-                        <input type="number" name="tahun_angkatan" id="tahun_angkatan" class="form-control"
-                            value="{{ old('tahun_angkatan') }}">
-                        @error('tahun_angkatan')
                             <div class="text-danger small">{{ $message }}</div>
                         @enderror
                     </div>

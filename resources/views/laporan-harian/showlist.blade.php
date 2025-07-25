@@ -171,34 +171,82 @@
                                                 </td>
                                                 <td class="pe-4 py-3 text-center">
                                                     <div class="d-flex justify-content-center gap-2">
+
                                                         @if (auth()->user()->role === 'siswa' && $laporan->status_validasi == 'menunggu')
-                                                            <a href="{{ route('laporan-harian.show', $laporan->id) }}"
-                                                                class="btn btn-sm btn-outline-primary rounded-pill px-3"
-                                                                data-bs-toggle="tooltip" title="Lihat Detail">
-                                                                <i class="fas fa-eye"></i>
-                                                            </a>
                                                             <a href="{{ route('laporan-harian.edit', $laporan->id) }}"
                                                                 class="btn btn-sm btn-outline-secondary rounded-pill px-3"
                                                                 data-bs-toggle="tooltip" title="Edit">
                                                                 <i class="fas fa-edit"></i>
                                                             </a>
+                                                            <form
+                                                                action="{{ route('admin.laporan-harian.destroy', $laporan->id) }}"
+                                                                method="POST" class="d-inline">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit"
+                                                                    class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                                                    data-bs-toggle="tooltip" title="Hapus"
+                                                                    onclick="return confirm('Yakin hapus laporan ini?')">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </form>
                                                         @endif
                                                         @if (auth()->user()->role === 'admin')
-                                                            <a href="{{ route('admin.laporan-harian.bysiswa', $laporan->siswa_id) }}"
+                                                            <a href="{{ route('admin.laporan-harian.show', $laporan->id) }}"
                                                                 class="btn btn-sm btn-outline-primary rounded-pill px-3"
                                                                 data-bs-toggle="tooltip" title="Lihat Detail">
                                                                 <i class="fas fa-eye"></i>
                                                             </a>
-                                                            <button class="btn btn-sm btn-outline-success rounded-pill px-3"
-                                                                data-bs-toggle="tooltip" title="Validasi"
-                                                                onclick="validasiLaporan({{ $laporan->id }}, 'valid')">
-                                                                <i class="fas fa-check"></i>
-                                                            </button>
-                                                            <button class="btn btn-sm btn-outline-danger rounded-pill px-3"
-                                                                data-bs-toggle="tooltip" title="Tolak"
-                                                                onclick="validasiLaporan({{ $laporan->id }}, 'tidak valid')">
-                                                                <i class="fas fa-times"></i>
-                                                            </button>
+                                                            @if ($laporan->status_validasi == 'menunggu')
+                                                                <form
+                                                                    action="{{ route('admin.laporan-harian.validasi', $laporan->id) }}"
+                                                                    method="POST" class="d-inline">
+                                                                    @csrf
+                                                                    <input type="hidden" name="status" value="diterima">
+                                                                    <button type="submit"
+                                                                        class="btn btn-sm btn-outline-success rounded-pill px-3"
+                                                                        title="Validasi">
+                                                                        <i class="fas fa-check"></i>
+                                                                    </button>
+                                                                </form>
+                                                                <form
+                                                                    action="{{ route('admin.laporan-harian.validasi', $laporan->id) }}"
+                                                                    method="POST" class="d-inline">
+                                                                    @csrf
+                                                                    <input type="hidden" name="status" value="ditolak">
+                                                                    <button type="submit"
+                                                                        class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                                                        data-bs-toggle="tooltip" title="Tolak"
+                                                                        onclick="return confirm('Yakin tolak laporan ini?')">
+                                                                        <i class="fas fa-times"></i>
+                                                                    </button>
+                                                                </form>
+                                                                <form
+                                                                    action="{{ route('admin.laporan-harian.destroy', $laporan->id) }}"
+                                                                    method="POST" class="d-inline">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit"
+                                                                        class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                                                        data-bs-toggle="tooltip" title="Hapus"
+                                                                        onclick="return confirm('Yakin hapus laporan ini?')">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                </form>
+                                                            @elseif ($laporan->status_validasi == 'diterima')
+                                                                <form
+                                                                    action="{{ route('admin.laporan-harian.validasi', $laporan->id) }}"
+                                                                    method="POST" class="d-inline">
+                                                                    @csrf
+                                                                    <input type="hidden" name="status" value="ditolak">
+                                                                    <button type="submit"
+                                                                        class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                                                        data-bs-toggle="tooltip" title="Tolak"
+                                                                        onclick="return confirm('Yakin tolak laporan ini?')">
+                                                                        <i class="fas fa-times"></i>
+                                                                    </button>
+                                                                </form>
+                                                            @endif
                                                         @endif
                                                     </div>
                                                 </td>
@@ -284,31 +332,5 @@
         });
 
         // Validation function for admin
-        function validasiLaporan(id, status) {
-            if (confirm(`Apakah Anda yakin ingin ${status === 'valid' ? 'memvalidasi' : 'menolak'} laporan ini?`)) {
-                fetch(`/laporan-harian/${id}/validasi`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({
-                            status: status
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            location.reload();
-                        } else {
-                            alert('Gagal memvalidasi laporan');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Terjadi kesalahan');
-                    });
-            }
-        }
     </script>
 @endpush

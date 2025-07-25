@@ -21,17 +21,28 @@ class Laporan extends Model
         'updated_at' => 'datetime'
     ];
 
+
     public function getStatusLabelAttribute()
     {
-        $statuses = [
-            'menunggu' => ['Menunggu Validasi', 'warning'],
-            'valid' => ['Diterima', 'success'],
-            'revisi' => ['Perlu Revisi', 'danger']
-        ];
-
-        return $statuses[$this->status] ?? ['Unknown', 'secondary'];
+        $status = $this->status;
+        switch ($status) {
+            case 'draft':
+                return ['Draft', 'secondary', 'file'];
+            case 'submitted':
+                return ['Terkirim', 'info', 'paper-plane'];
+            case 'approved':
+                return ['Disetujui', 'success', 'check'];
+            case 'rejected':
+                return ['Ditolak', 'danger', 'times'];
+            default:
+                return [$status, 'secondary', 'question'];
+        }
     }
 
+    public function getStatusIconAttribute()
+    {
+        return $this->status_label[2];
+    }
     public function siswa()
     {
         return $this->belongsTo(Siswa::class);

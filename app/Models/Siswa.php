@@ -11,11 +11,11 @@ class Siswa extends Model
         'nama',
         'nisn',
         'kelas',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'nis',
         'jurusan',
         'alamat',
-        'no_hp',
-        'email',
-        'foto',
     ];
 
     public function user()

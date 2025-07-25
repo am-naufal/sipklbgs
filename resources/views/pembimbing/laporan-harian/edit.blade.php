@@ -5,6 +5,7 @@
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="card shadow-lg border-0 rounded-3">
+                    <!-- Card Header -->
                     <div class="card-header bg-primary text-white py-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -20,10 +21,13 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Card Body -->
                     <div class="card-body">
                         <form action="{{ route('laporan-harian.update', $laporan->id) }}" method="POST">
                             @csrf
                             @method('PUT')
+
                             <!-- Info Penempatan -->
                             <div class="alert alert-light border mb-4">
                                 <div class="row">
@@ -40,6 +44,7 @@
                                         <div class="d-flex align-items-center">
                                             <i class="fas fa-user-tie text-primary me-3 fa-lg"></i>
                                             <div>
+
                                                 <strong>Pembimbing</strong>
                                                 <p class="mb-0">
                                                     {{ optional($penempatan)->pembimbing->nama_lengkap ?? '-' }}</p>
@@ -48,6 +53,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <!-- Kegiatan -->
                             <div class="mb-4">
                                 <label class="form-label fw-semibold mb-3 text-primary">
@@ -58,6 +64,7 @@
                                     <div class="text-danger small mt-1">{{ $message }}</div>
                                 @enderror
                             </div>
+
                             <!-- Catatan -->
                             <div class="mb-4">
                                 <label class="form-label fw-semibold mb-3 text-primary">
@@ -68,6 +75,7 @@
                                     <div class="text-danger small mt-1">{{ $message }}</div>
                                 @enderror
                             </div>
+
                             <!-- Action Buttons -->
                             <div class="d-flex justify-content-between mt-4">
                                 <a href="{{ route('laporan-harian.index') }}"
@@ -86,7 +94,7 @@
     </div>
 @endsection
 
-@push('styles')
+@push('css')
     <style>
         .card {
             border-radius: 12px;

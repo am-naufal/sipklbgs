@@ -22,10 +22,6 @@ return new class extends Migration
             $table->string('kelas');
             $table->enum('jurusan', ['tb', 'mm', 'aphp']);
             $table->text('alamat');
-            $table->enum('status_pkl', ['belum_mulai', 'sedang_berjalan', 'selesai'])->default('belum_mulai');
-            $table->date('tanggal_mulai')->nullable();
-            $table->date('tanggal_selesai')->nullable();
-            $table->integer('tahun_angkatan');
             $table->timestamps();
         });
     }

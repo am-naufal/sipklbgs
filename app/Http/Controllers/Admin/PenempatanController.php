@@ -48,16 +48,15 @@ class PenempatanController extends Controller
 
     public function edit(Penempatan $penempatan)
     {
-        $siswas = Siswa::all();
-        $industris = Industri::all();
-        $pembimbings = Pembimbing::all();
-        return view('admin.penempatans.edit', compact('penempatan', 'siswas', 'industris', 'pembimbings'));
+
+        $penempatan->load(['siswa', 'industri', 'pembimbing']);
+
+        return view('admin.penempatans.edit', compact('penempatan'));
     }
 
     public function update(Request $request, Penempatan $penempatan)
     {
         $request->validate([
-            'siswa_id' => 'required|exists:siswas,id',
             'industri_id' => 'required|exists:industris,id',
             'pembimbing_id' => 'required|exists:pembimbings,id',
             'status' => 'required|string|max:255',

@@ -41,7 +41,7 @@ class LaporanHarianController extends Controller
             return redirect()->back()->with('error', 'Anda belum memiliki penempatan');
         }
 
-        return view('siswa.laporan-harian.create', compact('penempatan'));
+        return view('laporan-harian.create', compact('penempatan'));
     }
 
     public function store(Request $request)
@@ -67,7 +67,7 @@ class LaporanHarianController extends Controller
             'status_validasi' => 'menunggu'
         ]);
 
-        return redirect()->route('siswa.laporan-harian.index')
+        return redirect()->route('laporan-harian.index')
             ->with('success', 'Laporan harian berhasil dikirim!');
     }
 
@@ -83,7 +83,7 @@ class LaporanHarianController extends Controller
             ->where('siswa_id', $siswa->id)
             ->findOrFail($id);
 
-        return view('siswa.laporan-harian.show', compact('laporan'));
+        return view('laporan-harian.show', compact('laporan'));
     }
 
     public function edit($id)
@@ -98,13 +98,13 @@ class LaporanHarianController extends Controller
             ->findOrFail($id);
 
         if ($laporan->status_validasi !== 'menunggu') {
-            return redirect()->route('siswa.laporan-harian.index')
+            return redirect()->route('laporan-harian.index')
                 ->with('error', 'Laporan yang sudah divalidasi tidak dapat diubah.');
         }
 
         $penempatan = $laporan->penempatan;
 
-        return view('siswa.laporan-harian.edit', compact('laporan', 'penempatan'));
+        return view('laporan-harian.edit', compact('laporan', 'penempatan'));
     }
 
     public function update(Request $request, $id)
@@ -133,7 +133,7 @@ class LaporanHarianController extends Controller
             'status_validasi' => 'menunggu'
         ]);
 
-        return redirect()->route('siswa.laporan-harian.index')
+        return redirect()->route('laporan-harian.index')
             ->with('success', 'Laporan berhasil diperbarui!');
     }
 
@@ -154,7 +154,17 @@ class LaporanHarianController extends Controller
 
         $laporan->delete();
 
-        return redirect()->route('siswa.laporan-harian.index')
+        return redirect()->route('laporan-harian.index')
             ->with('success', 'Laporan berhasil dihapus!');
+    }
+
+    public function showBySiswa($siswa_id)
+    {
+        $laporans = LaporanHarian::where('siswa_id', $siswa_id)
+            ->with(['penempatan.industri', 'penempatan.pembimbing'])
+            ->latest()
+            ->paginate(10);
+
+        return view('laporan-harian.showlist', compact('laporans'));
     }
 }
