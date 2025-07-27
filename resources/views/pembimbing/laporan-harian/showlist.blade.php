@@ -111,7 +111,7 @@
                                                         <span>{{ $laporan->penempatan->industri->nama ?? '-' }}</span>
                                                     </div>
                                                 </td>
-                                                @if (auth()->user()->role === 'admin')
+                                                @if (auth()->user()->role === 'pembimbing')
                                                     <td class="py-3">
                                                         @if ($laporan->penempatan->pembimbing ?? false)
                                                             <div class="d-flex align-items-center">
@@ -179,7 +179,7 @@
                                                                 <i class="fas fa-edit"></i>
                                                             </a>
                                                             <form
-                                                                action="{{ route('admin.laporan-harian.destroy', $laporan->id) }}"
+                                                                action="{{ route('pembimbing.laporan-harian.destroy', $laporan->id) }}"
                                                                 method="POST" class="d-inline">
                                                                 @csrf
                                                                 @method('DELETE')
@@ -191,15 +191,15 @@
                                                                 </button>
                                                             </form>
                                                         @endif
-                                                        @if (auth()->user()->role === 'admin')
-                                                            <a href="{{ route('admin.laporan-harian.show', $laporan->id) }}"
+                                                        @if (Auth::user()->role === 'pembimbing')
+                                                            <a href="{{ route('pembimbing.laporan-harian.show', $laporan->id) }}"
                                                                 class="btn btn-sm btn-outline-primary rounded-pill px-3"
                                                                 data-bs-toggle="tooltip" title="Lihat Detail">
                                                                 <i class="fas fa-eye"></i>
                                                             </a>
                                                             @if ($laporan->status_validasi == 'menunggu')
                                                                 <form
-                                                                    action="{{ route('admin.laporan-harian.validasi', $laporan->id) }}"
+                                                                    action="{{ route('pembimbing.laporan-harian.validasi', $laporan->id) }}"
                                                                     method="POST" class="d-inline">
                                                                     @csrf
                                                                     <input type="hidden" name="status" value="diterima">
@@ -210,19 +210,17 @@
                                                                     </button>
                                                                 </form>
                                                                 <form
-                                                                    action="{{ route('admin.laporan-harian.validasi', $laporan->id) }}"
+                                                                    action="{{ route('pembimbing.laporan-harian.validasi', $laporan->id) }}"
                                                                     method="POST" class="d-inline">
                                                                     @csrf
                                                                     <input type="hidden" name="status" value="ditolak">
                                                                     <button type="submit"
-                                                                        class="btn btn-sm btn-outline-danger rounded-pill px-3"
-                                                                        data-bs-toggle="tooltip" title="Tolak"
-                                                                        onclick="return confirm('Yakin tolak laporan ini?')">
+                                                                        class="btn btn-sm btn-outline-danger rounded-pill px-3">
                                                                         <i class="fas fa-times"></i>
                                                                     </button>
                                                                 </form>
                                                                 <form
-                                                                    action="{{ route('admin.laporan-harian.destroy', $laporan->id) }}"
+                                                                    action="{{ route('pembimbing.laporan-harian.destroy', $laporan->id) }}"
                                                                     method="POST" class="d-inline">
                                                                     @csrf
                                                                     @method('DELETE')
@@ -235,7 +233,7 @@
                                                                 </form>
                                                             @elseif ($laporan->status_validasi == 'diterima')
                                                                 <form
-                                                                    action="{{ route('admin.laporan-harian.validasi', $laporan->id) }}"
+                                                                    action="{{ route('pembimbing.laporan-harian.validasi', $laporan->id) }}"
                                                                     method="POST" class="d-inline">
                                                                     @csrf
                                                                     <input type="hidden" name="status" value="ditolak">
@@ -244,6 +242,19 @@
                                                                         data-bs-toggle="tooltip" title="Tolak"
                                                                         onclick="return confirm('Yakin tolak laporan ini?')">
                                                                         <i class="fas fa-times"></i>
+                                                                    </button>
+                                                                </form>
+                                                            @elseif ($laporan->status_validasi == 'ditolak')
+                                                                <form
+                                                                    action="{{ route('pembimbing.laporan-harian.validasi', $laporan->id) }}"
+                                                                    method="POST" class="d-inline">
+                                                                    @csrf
+                                                                    <input type="hidden" name="status"
+                                                                        value="diterima">
+                                                                    <button type="submit"
+                                                                        class="btn btn-sm btn-outline-success rounded-pill px-3"
+                                                                        title="Validasi">
+                                                                        <i class="fas fa-check"></i>
                                                                     </button>
                                                                 </form>
                                                             @endif
@@ -331,6 +342,6 @@
             });
         });
 
-        // Validation function for admin
+        // Validation function for pembimbing
     </script>
 @endpush

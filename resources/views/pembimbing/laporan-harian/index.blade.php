@@ -183,22 +183,12 @@
                                                                 <i class="fas fa-edit"></i>
                                                             </a>
                                                         @endif
-                                                        @if (auth()->user()->role === 'admin')
-                                                            <a href="{{ route('admin.laporan-harian.bysiswa', $laporan->siswa_id) }}"
+                                                        @if (auth()->user()->role === 'pembimbing')
+                                                            <a href="{{ route('pembimbing.laporan-harian.bysiswa', $laporan->siswa_id) }}"
                                                                 class="btn btn-sm btn-outline-primary rounded-pill px-3"
                                                                 data-bs-toggle="tooltip" title="Lihat Detail">
-                                                                <i class="fas fa-eye"></i>
+                                                                <i class="fa fa-clipboard-list" aria-hidden="true"></i>
                                                             </a>
-                                                            <button class="btn btn-sm btn-outline-success rounded-pill px-3"
-                                                                data-bs-toggle="tooltip" title="Validasi"
-                                                                onclick="validasiLaporan({{ $laporan->id }}, 'valid')">
-                                                                <i class="fas fa-check"></i>
-                                                            </button>
-                                                            <button class="btn btn-sm btn-outline-danger rounded-pill px-3"
-                                                                data-bs-toggle="tooltip" title="Tolak"
-                                                                onclick="validasiLaporan({{ $laporan->id }}, 'tidak valid')">
-                                                                <i class="fas fa-times"></i>
-                                                            </button>
                                                         @endif
                                                     </div>
                                                 </td>

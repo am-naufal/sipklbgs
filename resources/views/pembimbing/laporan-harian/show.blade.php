@@ -17,9 +17,9 @@
                                 </p>
                             </div>
                             <div class="badge bg-white text-primary rounded-pill px-3">
-                                @if ($laporan->status_validasi == 'valid')
+                                @if ($laporan->status_validasi == 'diterima')
                                     <i class="fas fa-check-circle me-1"></i> Valid
-                                @elseif($laporan->status_validasi == 'tidak valid')
+                                @elseif($laporan->status_validasi == 'ditolak')
                                     <i class="fas fa-times-circle me-1"></i> Ditolak
                                 @else
                                     <i class="fas fa-clock me-1"></i> Menunggu
@@ -91,7 +91,8 @@
 
                         <!-- Tombol Kembali -->
                         <div class="d-flex justify-content-end mt-4">
-                            <a href="{{ route('laporan-harian.index') }}" class="btn btn-outline-primary rounded-pill px-4">
+                            <a href="{{ route('pembimbing.laporan-harian.index') }}"
+                                class="btn btn-outline-primary rounded-pill px-4">
                                 <i class="fas fa-arrow-left me-2"></i> Kembali
                             </a>
                         </div>

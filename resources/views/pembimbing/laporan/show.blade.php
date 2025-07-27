@@ -136,7 +136,7 @@
                             </div>
                         </div>
                         <div class="mt-3">
-                            <a href="{{ route('admin.laporans.download', $laporan->id) }}"
+                            <a href="{{ route('pembimbing.laporans.download', $laporan->id) }}"
                                 class="btn btn-danger rounded-pill px-4">
                                 <i class="fas fa-download me-2"></i>Download File
                             </a>
@@ -150,10 +150,12 @@
                         <i class="fas fa-arrow-left me-2"></i>Kembali ke Daftar
                     </a>
                     <div class="d-flex gap-2">
-                        <a href="{{ route('laporan.edit', $laporan->id) }}" class="btn btn-warning rounded-pill px-4">
+                        <a href="{{ route('pembimbing.laporans.edit', $laporan->id) }}"
+                            class="btn btn-warning rounded-pill px-4">
                             <i class="fas fa-edit me-2"></i>Edit
                         </a>
-                        <form action="{{ route('laporan.destroy', $laporan->id) }}" method="POST" class="d-inline">
+                        <form action="{{ route('pembimbing.laporans.destroy', $laporan->id) }}" method="POST"
+                            class="d-inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger rounded-pill px-4"

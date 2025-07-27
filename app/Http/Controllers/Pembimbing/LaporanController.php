@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Pembimbing;
 
+use App\Http\Controllers\Controller;
 use App\Models\Laporan;
+use App\Models\Pembimbing;
 use App\Models\Siswa;
 use App\Models\Penempatan;
 use Illuminate\Http\Request;
@@ -16,51 +18,44 @@ class LaporanController extends Controller
      */
     public function index()
     {
-        if (Auth::user()->role === 'admin') {
-            $laporansAll = Laporan::with(['siswa', 'penempatan.industri', 'penempatan.pembimbing'])
-                ->latest()
-                ->get();
-            $uniqueLaporans = [];
-            $siswaIds = [];
+        $pembimbingid = Pembimbing::where('user_id', Auth::user()->id)->first()->id;
+        $perPage = 10; // Number of items per page
+        if (in_array(Auth::user()->role, ['admin', 'pembimbing', 'industri'])) {
+            if (Auth::user()->role === 'pembimbing') {
+                // Ambil siswa bimbingan pembimbing
 
-            foreach ($laporansAll as $laporan) {
-                if (!in_array($laporan->siswa_id, $siswaIds)) {
-                    $uniqueLaporans[] = $laporan;
-                    $siswaIds[] = $laporan->siswa_id;
+                $laporansAll = Laporan::whereHas('penempatan', function ($query) use ($pembimbingid) {
+                    $query->where('pembimbing_id', $pembimbingid);
+                })
+                    ->with(['siswa', 'penempatan.industri', 'penempatan.pembimbing'])
+                    ->latest()
+                    ->get();
+                $uniqueLaporans = [];
+                $siswaIds = [];
+
+                foreach ($laporansAll as $laporan) {
+                    if (!in_array($laporan->siswa_id, $siswaIds)) {
+                        $uniqueLaporans[] = $laporan;
+                        $siswaIds[] = $laporan->siswa_id;
+                    }
                 }
-            }
-            $perPage = 10;
-            // Manual pagination for $uniqueLaporans array
-            $currentPage = request()->get('page', 1);
-            $itemsForCurrentPage = array_slice($uniqueLaporans, ($currentPage - 1) * $perPage, $perPage);
-            $laporans = new \Illuminate\Pagination\LengthAwarePaginator(
-                $itemsForCurrentPage,
-                count($uniqueLaporans),
-                $perPage,
-                $currentPage,
-                ['path' => request()->url(), 'query' => request()->query()]
-            );
-            return view('laporan.index', compact('laporans'));
-        } elseif (Auth::user()->role === 'siswa') {
-            $siswa = Siswa::where('user_id', Auth::user()->id)->first();
-            if (!$siswa) {
-                abort(404, 'Siswa not found.');
-            }
-            $laporans = Laporan::where('siswa_id', $siswa->id)->with(['penempatan.industri', 'penempatan.pembimbing'])->first();
-            return view('siswa.laporan.index', compact('laporans'));
-        } elseif (Auth::user()->role === 'pembimbing') {
-            $laporans = Laporan::whereHas('penempatan', function ($query) {
-                $query->where('pembimbing_id', Auth::user()->pembimbing->id);
-            })->with(['siswa', 'penempatan.industri', 'penempatan.pembimbing'])->latest()->paginate(10);
-        } elseif (Auth::user()->role === 'industri') {
-            $laporans = Laporan::whereHas('penempatan', function ($query) {
-                $query->where('industri_id', Auth::user()->industri->id);
-            })->with(['siswa', 'penempatan.industri', 'penempatan.pembimbing'])->latest()->paginate(10);
-        } else {
-            $laporans = Laporan::query()->paginate(10); // Empty paginated collection
-        }
 
-        return view('laporan.index', compact('laporans'));
+                // Manual pagination for $uniqueLaporans array
+                $currentPage = request()->get('page', 1);
+                $itemsForCurrentPage = array_slice($uniqueLaporans, ($currentPage - 1) * $perPage, $perPage);
+                $laporans = new \Illuminate\Pagination\LengthAwarePaginator(
+                    $itemsForCurrentPage,
+                    count($uniqueLaporans),
+                    $perPage,
+                    $currentPage,
+                    ['path' => request()->url(), 'query' => request()->query()]
+                );
+
+                return view('pembimbing.laporan.index', compact('laporans'));
+            } else {
+                $laporans = Laporan::query()->paginate($perPage); // Empty paginated collection
+            }
+        }
     }
     public function indexSiswa()
     {
@@ -74,40 +69,11 @@ class LaporanController extends Controller
         $totalLaporan = $laporans->count();
         $lastSubmission = $laporans->isNotEmpty() ? $laporans->first()->created_at->diffForHumans() : null;
 
-        return view('siswa.laporan.index', compact('laporans', 'totalLaporan', 'lastSubmission'));
+        return view('siswa.pembimbing.laporan.index', compact('laporans', 'totalLaporan', 'lastSubmission'));
     }
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        if (Auth::user()->role === 'siswa') {
-            $siswa = Siswa::where('user_id', Auth::user()->id)->first();
-            if (!$siswa) {
-                abort(404, 'Siswa not found.');
-            }
-            $penempatan = Penempatan::where('siswa_id', $siswa->id)->first();
-            if (!$penempatan) {
-                return redirect()->back()->with('error', 'Anda belum memiliki penempatan');
-            }
-            return view('siswa.laporan.create', compact('siswa', 'penempatan'));
-        } elseif (Auth::user()->role === 'admin') {
-            // Admin can create laporan for any siswa
-            $siswas = Siswa::all();
-        } elseif (Auth::user()->role === 'pembimbing' || Auth::user()->role === 'industri') {
-            // Pembimbing and Industri can create laporan for their respective penempatan
-            $penempatan = Penempatan::where('pembimbing_id', Auth::user()->pembimbing->id)
-                ->orWhere('industri_id', Auth::user()->industri->id)
-                ->first();
-            if (!$penempatan) {
-                return redirect()->back()->with('error', 'Anda belum memiliki penempatan');
-            }
-        }
-        $siswas = Siswa::all();
-        $penempatans = Penempatan::all();
-
-        return view('laporan.create', compact('siswas', 'penempatans'));
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -134,7 +100,7 @@ class LaporanController extends Controller
 
             Laporan::create($validated);
 
-            return redirect()->route('laporan.index')->with('success', 'Laporan berhasil ditambahkan!');
+            return redirect()->route('pembimbing.laporan.index')->with('success', 'Laporan berhasil ditambahkan!');
         } elseif (Auth::user()->role === 'siswa') {
             $siswa = Siswa::where('user_id', Auth::user()->id)->first();
             if (!$siswa) {
@@ -161,7 +127,7 @@ class LaporanController extends Controller
                 'status_validasi' => $validated['status'],
             ]);
 
-            return redirect()->route('laporan.index')->with('success', 'Laporan berhasil ditambahkan!');
+            return redirect()->route('pembimbing.laporan.index')->with('success', 'Laporan berhasil ditambahkan!');
         }
     }
 
@@ -174,10 +140,10 @@ class LaporanController extends Controller
 
         if (Auth::user()->role === 'siswa' && $laporan->siswa_id === $siswa->id) {
             $laporan->load(['siswa', 'penempatan.industri', 'penempatan.pembimbing']);
-            return view('siswa.laporan.show', compact('laporan'));
+            return view('siswa.pembimbing.laporan.show', compact('laporan'));
         } elseif (Auth::user()->role === 'admin' || Auth::user()->role === 'pembimbing' || Auth::user()->role === 'industri') {
             $laporan->load(['siswa', 'penempatan.industri', 'penempatan.pembimbing']);
-            return view('laporan.show', compact('laporan'));
+            return view('pembimbing.laporan.show', compact('laporan'));
         } else {
             abort(403, 'Unauthorized action.');
         }
@@ -188,33 +154,8 @@ class LaporanController extends Controller
      */
     public function edit(Laporan $laporan)
     {
-
-        if (Auth::user()->role !== 'admin' && Auth::user()->role !== 'siswa') {
-            abort(403, 'Unauthorized action.');
-        } elseif (Auth::user()->role === 'siswa') {
-            $siswa = Siswa::where('user_id', Auth::user()->id)->first();
-            if (!$siswa || $laporan->siswa_id !== $siswa->id) {
-                abort(404, 'Laporan not found for this siswa.');
-            }
-            $laporan->load(['siswa', 'penempatan.industri', 'penempatan.pembimbing']);
-            return view('siswa.laporan.edit', compact('laporan'));
-        } elseif (Auth::user()->role === 'admin') {
-            // Admin can edit any laporan
-            $laporan->load(['siswa', 'penempatan.industri', 'penempatan.pembimbing']);
-            return view('laporan.edit', compact('laporan'));
-        } elseif (Auth::user()->role === 'pembimbing' || Auth::user()->role === 'industri') {
-            // Pembimbing and Industri can edit laporan for their respective penempatan
-            $penempatan = Penempatan::where('pembimbing_id', Auth::user()->pembimbing->id)
-                ->orWhere('industri_id', Auth::user()->industri->id)
-                ->first();
-            if (!$penempatan || $laporan->penempatan_id !== $penempatan->id) {
-                abort(404, 'Laporan not found for this penempatan.');
-            }
-        }
-        $siswas = Siswa::all();
-        $penempatans = Penempatan::all();
-
-        return view('laporan.edit', compact('laporan', 'siswas', 'penempatans'));
+        $laporan->load(['siswa', 'penempatan.industri', 'penempatan.pembimbing']);
+        return view('pembimbing.laporan.edit', compact('laporan'));
     }
 
     /**
@@ -250,7 +191,7 @@ class LaporanController extends Controller
                 $validated['file_path'] = $laporan->file_path; // Keep old file
             } // Default to 'menunggu' if not provided
             $laporan->update($validated);
-            return redirect()->route('laporan.index')->with('success', 'Laporan berhasil diperbarui!');
+            return redirect()->route('pembimbing.laporan.index')->with('success', 'Laporan berhasil diperbarui!');
         } elseif (Auth::user()->role === 'admin') {
             // Admin can update any laporan
         } elseif (Auth::user()->role === 'pembimbing' || Auth::user()->role === 'industri') {
@@ -287,7 +228,7 @@ class LaporanController extends Controller
 
         $laporan->update($validated);
 
-        return redirect()->route('laporan.index')->with('success', 'Laporan berhasil diperbarui!');
+        return redirect()->route('pembimbing.laporans.index')->with('success', 'Laporan berhasil diperbarui!');
     }
 
     /**
@@ -302,7 +243,7 @@ class LaporanController extends Controller
 
         $laporan->delete();
 
-        return redirect()->route('admin.laporans.index')->with('success', 'Laporan berhasil dihapus!');
+        return redirect()->route('pembimbing.laporans.index')->with('success', 'Laporan berhasil dihapus!');
     }
 
     /**
@@ -341,7 +282,7 @@ class LaporanController extends Controller
             return redirect()->back()->with('error', 'Tidak ada laporan untuk penempatan ini.');
         }
 
-        return view('laporan.show-list', compact('laporans'));
+        return view('pembimbing.laporan.show-list', compact('laporans'));
     }
     public function validasi(Request $request, $id)
     {

@@ -21,10 +21,6 @@
                                     @endif
                                 </p>
                             </div>
-                            <a href="{{ route('admin.laporans.create') }}"
-                                class="btn btn-light text-primary rounded-pill px-4">
-                                <i class="fas fa-plus-circle me-2"></i>Tambah Laporan
-                            </a>
                         </div>
                     </div>
 
@@ -48,9 +44,7 @@
                                 <p class="text-muted mb-4">
                                     Tidak ada laporan yang ditemukan
                                 </p>
-                                <a href="{{ route('admin.laporans.create') }}" class="btn btn-primary px-4 rounded-pill">
-                                    <i class="fas fa-plus-circle me-2"></i>Buat Laporan Pertama
-                                </a>
+
                             </div>
                         @else
                             <div class="table-responsive">
@@ -112,22 +106,23 @@
                                                 </td>
                                                 <td class="pe-4 py-3 text-center">
                                                     <div class="d-flex justify-content-center gap-2">
-                                                        <a href="{{ route('admin.laporans.show.list', $laporan->id) }}"
+                                                        <a href="{{ route('pembimbing.laporans.show.list', $laporan->id) }}"
                                                             class="btn btn-sm btn-outline-primary rounded-pill px-3"
                                                             data-bs-toggle="tooltip" title="Lihat Detail">
                                                             <i class="fas fa-eye"></i>
                                                         </a>
-                                                        <a href="{{ route('admin.laporans.edit', $laporan->id) }}"
+                                                        <a href="{{ route('pembimbing.laporans.edit', $laporan->id) }}"
                                                             class="btn btn-sm btn-outline-secondary rounded-pill px-3"
                                                             data-bs-toggle="tooltip" title="Edit">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
-                                                        <a href="{{ route('admin.laporans.download', $laporan->id) }}"
+                                                        <a href="{{ route('pembimbing.laporans.download', $laporan->id) }}"
                                                             class="btn btn-sm btn-outline-success rounded-pill px-3"
                                                             data-bs-toggle="tooltip" title="Download">
                                                             <i class="fas fa-download"></i>
                                                         </a>
-                                                        <form action="{{ route('admin.laporans.destroy', $laporan->id) }}"
+                                                        <form
+                                                            action="{{ route('pembimbing.laporans.destroy', $laporan->id) }}"
                                                             method="POST" class="d-inline">
                                                             @csrf
                                                             @method('DELETE')

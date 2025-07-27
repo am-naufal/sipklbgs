@@ -75,7 +75,11 @@
                                 </li>
                                 <li class="mb-2">
                                     <i class="fas fa-user-tie me-2 text-muted"></i>
-                                    Pembimbing: {{ $laporan->penempatan->industri->nama_pj ?? '-' }}
+                                    Pembimbing Industri: {{ $laporan->penempatan->industri->nama_pj ?? '-' }}
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-user-tie me-2 text-muted"></i>
+                                    Pembimbing Sekolah: {{ $laporan->penempatan->pembimbing->nama_lengkap ?? '-' }}
                                 </li>
                             </ul>
                         </div>

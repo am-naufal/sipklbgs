@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Pembimbing;
 
+use App\Http\Controllers\Controller;
 use App\Models\Laporan;
 use App\Models\LaporanHarian;
+use App\Models\Pembimbing;
 use App\Models\Penempatan;
 use App\Models\Siswa;
 use Carbon\Carbon;
@@ -15,57 +17,43 @@ class LaporanHarianController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
+        $pembimbingid = Pembimbing::where('user_id', Auth::user()->id)->first()->id;
         $perPage = 10; // Number of items per page
-
-        if (in_array($user->role, ['admin', 'pembimbing', 'industri'])) {
-            if ($user->role === 'pembimbing') {
+        if (in_array(Auth::user()->role, ['admin', 'pembimbing', 'industri'])) {
+            if (Auth::user()->role === 'pembimbing') {
                 // Ambil siswa bimbingan pembimbing
-                $siswaIds = $user->pembimbing->penempatans()->pluck('siswa_id')->toArray();
-                $laporansQuery = LaporanHarian::whereIn('siswa_id', $siswaIds);
-            } elseif ($user->role === 'industri') {
-                $laporansQuery = LaporanHarian::whereHas('penempatan', function ($query) use ($user) {
-                    $query->where('industri_id', $user->industri->id);
-                });
-            } else {
-                $laporansQuery = LaporanHarian::query();
-            }
 
-            $laporansAll = $laporansQuery->with(['siswa', 'penempatan.industri', 'penempatan.pembimbing'])
-                ->latest()
-                ->get();
+                $laporansAll = LaporanHarian::whereHas('penempatan', function ($query) use ($pembimbingid) {
+                    $query->where('pembimbing_id', $pembimbingid);
+                })
+                    ->with(['siswa', 'penempatan.industri', 'penempatan.pembimbing'])
+                    ->latest()
+                    ->get();
+                $uniqueLaporans = [];
+                $siswaIds = [];
 
-            $uniqueLaporans = [];
-            $siswaIds = [];
-
-            foreach ($laporansAll as $laporan) {
-                if (!in_array($laporan->siswa_id, $siswaIds)) {
-                    $uniqueLaporans[] = $laporan;
-                    $siswaIds[] = $laporan->siswa_id;
+                foreach ($laporansAll as $laporan) {
+                    if (!in_array($laporan->siswa_id, $siswaIds)) {
+                        $uniqueLaporans[] = $laporan;
+                        $siswaIds[] = $laporan->siswa_id;
+                    }
                 }
-            }
 
-            // Manual pagination for $uniqueLaporans array
-            $currentPage = request()->get('page', 1);
-            $itemsForCurrentPage = array_slice($uniqueLaporans, ($currentPage - 1) * $perPage, $perPage);
-            $laporans = new \Illuminate\Pagination\LengthAwarePaginator(
-                $itemsForCurrentPage,
-                count($uniqueLaporans),
-                $perPage,
-                $currentPage,
-                ['path' => request()->url(), 'query' => request()->query()]
-            );
-            return view('laporan-harian.index', compact('laporans'));
-        } elseif ($user->role === 'siswa') {
-            $siswa = Siswa::where('user_id', $user->id)->first();
-            // Ambil data laporan harian siswa
-            $laporans = LaporanHarian::where('siswa_id', $siswa->id)
-                ->with(['penempatan.industri', 'penempatan.pembimbing'])
-                ->latest()
-                ->paginate($perPage);
-            return view('laporan-harian.index', compact('laporans'));
-        } else {
-            $laporans = LaporanHarian::query()->paginate($perPage); // Empty paginated collection
+                // Manual pagination for $uniqueLaporans array
+                $currentPage = request()->get('page', 1);
+                $itemsForCurrentPage = array_slice($uniqueLaporans, ($currentPage - 1) * $perPage, $perPage);
+                $laporans = new \Illuminate\Pagination\LengthAwarePaginator(
+                    $itemsForCurrentPage,
+                    count($uniqueLaporans),
+                    $perPage,
+                    $currentPage,
+                    ['path' => request()->url(), 'query' => request()->query()]
+                );
+
+                return view('pembimbing.laporan-harian.index', compact('laporans'));
+            } else {
+                $laporans = LaporanHarian::query()->paginate($perPage); // Empty paginated collection
+            }
         }
     }
 
@@ -83,7 +71,7 @@ class LaporanHarianController extends Controller
 
         $siswa = Siswa::findOrFail($siswa_id);
 
-        return view('laporan-harian.showlist', compact('laporans', 'siswa'));
+        return view('pembimbing.laporan-harian.showlist', compact('laporans', 'siswa'));
     }
 
     public function create()
@@ -96,7 +84,7 @@ class LaporanHarianController extends Controller
         if ($penempatan) {
             $penempatan->tanggal_penempatan = Carbon::parse($penempatan->tanggal_penempatan);
         }
-        return view('laporan-harian.create', compact('penempatan'));
+        return view('pembimbing.laporan-harian.create', compact('penempatan'));
     }
 
     public function store(Request $request)
@@ -125,7 +113,7 @@ class LaporanHarianController extends Controller
 
         $laporan = LaporanHarian::with(['siswa', 'penempatan.industri', 'penempatan.pembimbing'])
             ->findOrFail($id);
-        return view('laporan-harian.show', compact('laporan'));
+        return view('pembimbing.laporan-harian.show', compact('laporan'));
     }
 
     public function edit($id)
@@ -140,7 +128,7 @@ class LaporanHarianController extends Controller
         }
 
         $penempatan = $laporan->penempatan;
-        return view('laporan-harian.edit', compact('laporan', 'penempatan'));
+        return view('pembimbing.laporan-harian.edit', compact('laporan', 'penempatan'));
     }
     public function update(Request $request, $id)
     {
@@ -170,7 +158,7 @@ class LaporanHarianController extends Controller
             'status_validasi' => 'menunggu' // Reset status setelah edit
         ]);
 
-        return redirect()->route('laporan-harian.index')
+        return redirect()->route('pembimbing.laporan-harian.index')
             ->with('success', 'Laporan berhasil diperbarui!');
     }
     public function destroy(LaporanHarian $laporan)

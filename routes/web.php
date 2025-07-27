@@ -12,6 +12,10 @@ use App\Http\Controllers\IndustriController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LaporanHarianController;
 use App\Http\Controllers\Siswa\LaporanHarianController as SiswaLaporanHarianController;
+use App\Http\Controllers\Pembimbing\LaporanHarianController as pPembimbingLaporanHarianController;
+use App\Http\Controllers\Pembimbing\LaporanController as PembimbingLaporanController;
+use App\Http\Controllers\Pembimbing\LaporanHarianController as PembimbingLaporanHarianController;
+use App\Http\Controllers\Pembimbing\PenempatanController as PembimbingPenempatanController;
 use App\Models\Industri;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -66,9 +70,29 @@ Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->group(function () {
     Route::get('/laporan/download/{laporan}', [LaporanController::class, 'download'])->name('laporan.download');
 });
 // Route khusus pembimbing
+Route::middleware(['auth', 'role:industri'])->prefix('industri')->name('industri.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\IndustriController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [ProfileController::class, 'industriEdit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'industriUpdate'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'industriDestroy'])->name('profile.destroy');
+    Route::resource('laporan-harian', LaporanHarianController::class);
+});
 Route::middleware(['auth', 'role:pembimbing'])->prefix('pembimbing')->name('pembimbing.')->group(function () {
-    Route::get('/dashboard', [\App\Http\Controllers\Pembimbing\DashboardController::class, 'index'])->name('dashboard');
-    // Route fitur lain untuk pembimbing dapat ditambahkan di sini
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::resource('laporan-harian', PembimbingLaporanHarianController::class);
+    Route::resource('laporans', PembimbingLaporanController::class);
+    Route::resource('penempatans', PenempatanController::class);
+    Route::get('/laporans/{laporan}', [PembimbingLaporanController::class, 'show'])->name('laporans.show');
+    Route::get('/laporans/download/{laporan}', [PembimbingLaporanController::class, 'download'])->name('laporans.download');
+    Route::get('/laporans/show/list/{id}', [PembimbingLaporanController::class, 'showList'])->name('laporans.show.list');
+    Route::post('/laporans/{id}/validasi', [PembimbingLaporanController::class, 'validasi'])
+        ->name('laporans.validasi');
+    Route::get('/penempatan', [PenempatanController::class, 'index'])->name('penempatan.index');
+    Route::get('/siswa-bimbingan', [SiswaController::class, 'siswaBimbingan'])->name('siswas.index');
+    Route::get('/siswa-bimbingan/show/{siswa}', [SiswaController::class, 'showForPembimbing'])->name('siswas.show');
+    Route::get('laporan-harian/siswa/{siswa_id}', [PembimbingLaporanHarianController::class, 'showBySiswa'])->name('laporan-harian.bysiswa');
+    Route::post('/laporan-harian/{id}/validasi', [PembimbingLaporanHarianController::class, 'validasi'])
+        ->name('laporan-harian.validasi');
 });
 
 require __DIR__ . '/auth.php';

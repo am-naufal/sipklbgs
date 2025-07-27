@@ -103,62 +103,60 @@
                     </div>
 
                     <!-- Informasi PKL -->
-                    @if (isset($penempatan))
-                        <div class="col-12">
-                            <div class="bg-light p-3 rounded-3">
-                                <h5 class="fw-semibold text-primary mb-3 border-bottom pb-2">
-                                    <i class="fas fa-briefcase me-2"></i>Prakerin (PKL)
-                                </h5>
-                                <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <div class="p-3 bg-white rounded-3 border-start border-4 border-primary">
-                                            <small class="text-muted d-block">Status PKL</small>
-                                            <h5 class="mb-0 fw-bold text-primary">
-                                                {{ ucfirst(str_replace('_', ' ', $penempatan->status)) }}
-                                            </h5>
-                                        </div>
+                    <div class="col-12">
+                        <div class="bg-light p-3 rounded-3">
+                            <h5 class="fw-semibold text-primary mb-3 border-bottom pb-2">
+                                <i class="fas fa-briefcase me-2"></i>Prakerin (PKL)
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="p-3 bg-white rounded-3 border-start border-4 border-primary">
+                                        <small class="text-muted d-block">Status PKL</small>
+                                        <h5 class="mb-0 fw-bold text-primary">
+                                            {{ ucfirst(str_replace('_', ' ', $penempatan->status)) }}
+                                        </h5>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="p-3 bg-white rounded-3 border-start border-4 border-info">
-                                            <small class="text-muted d-block">Industri</small>
-                                            <h5 class="mb-0 fw-bold">
-                                                {{ $penempatan->industri->nama ?? 'Belum Ditempatkan' }}
-                                            </h5>
-                                        </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 bg-white rounded-3 border-start border-4 border-info">
+                                        <small class="text-muted d-block">Industri</small>
+                                        <h5 class="mb-0 fw-bold">
+                                            {{ $penempatan->industri->nama ?? 'Belum Ditempatkan' }}
+                                        </h5>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="p-3 bg-white rounded-3 border-start border-4 border-warning">
-                                            <small class="text-muted d-block">Durasi PKL</small>
-                                            <h5 class="mb-0 fw-bold">
-                                                @if ($penempatan->tanggal_penempatan && $penempatan->tanggal_selesai)
-                                                    {{ \Carbon\Carbon::parse($penempatan->tanggal_penempatan)->diffInMonths($penempatan->tanggal_selesai) }}
-                                                    Bulan
-                                                @else
-                                                    -
-                                                @endif
-                                            </h5>
-                                        </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="p-3 bg-white rounded-3 border-start border-4 border-warning">
+                                        <small class="text-muted d-block">Durasi PKL</small>
+                                        <h5 class="mb-0 fw-bold">
+                                            @if ($penempatan->tanggal_penempatan && $penempatan->tanggal_selesai)
+                                                {{ \Carbon\Carbon::parse($penempatan->tanggal_penempatan)->diffInMonths($penempatan->tanggal_selesai) }}
+                                                Bulan
+                                            @else
+                                                -
+                                            @endif
+                                        </h5>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="p-3 bg-white rounded-3">
-                                            <small class="text-muted d-block">Tanggal Mulai</small>
-                                            <strong>
-                                                {{ $penempatan->tanggal_penempatan ? \Carbon\Carbon::parse($penempatan->tanggal_penempatan)->translatedFormat('d F Y') : '-' }}
-                                            </strong>
-                                        </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-white rounded-3">
+                                        <small class="text-muted d-block">Tanggal Mulai</small>
+                                        <strong>
+                                            {{ $penempatan->tanggal_penempatan ? \Carbon\Carbon::parse($penempatan->tanggal_penempatan)->translatedFormat('d F Y') : '-' }}
+                                        </strong>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="p-3 bg-white rounded-3">
-                                            <small class="text-muted d-block">Tanggal Selesai</small>
-                                            <strong>
-                                                {{ $penempatan->tanggal_selesai ? \Carbon\Carbon::parse($penempatan->tanggal_selesai)->translatedFormat('d F Y') : '-' }}
-                                            </strong>
-                                        </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-white rounded-3">
+                                        <small class="text-muted d-block">Tanggal Selesai</small>
+                                        <strong>
+                                            {{ $penempatan->tanggal_selesai ? \Carbon\Carbon::parse($penempatan->tanggal_selesai)->translatedFormat('d F Y') : '-' }}
+                                        </strong>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    </div>
                 </div>
             </div>
 
@@ -168,12 +166,6 @@
                     <a href="{{ url()->previous() }}" class="btn btn-outline-secondary rounded-pill px-4">
                         <i class="fas fa-arrow-left me-1"></i> Kembali
                     </a>
-                    <div class="d-flex gap-2">
-                        <a href="{{ route('admin.siswas.edit', $siswa) }}" class="btn btn-warning rounded-pill px-4">
-                            <i class="fas fa-edit me-1"></i> Edit Data
-                        </a>
-
-                    </div>
                 </div>
             </div>
         </div>

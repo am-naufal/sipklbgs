@@ -6,7 +6,7 @@
         <div class="row justify-content-center">
             <div class="col-12">
                 <div class=" mb-3">
-                    <a href="{{ route('admin.laporans.index') }}" class="btn btn-primary rounded-pill p-3 shadow-lg"
+                    <a href="{{ route('pembimbing.laporans.index') }}" class="btn btn-primary rounded-pill p-3 shadow-lg"
                         title="Kembali">
                         <i class="fas fa-arrow-left fs-5"></i>Kembali
                     </a>
@@ -23,7 +23,7 @@
                                     Daftar laporan akhir siswa
                                 </p>
                             </div>
-                            <a href="{{ route('admin.laporans.create') }}"
+                            <a href="{{ route('pembimbing.laporans.create') }}"
                                 class="btn btn-light text-primary rounded-pill px-4">
                                 <i class="fas fa-plus-circle me-2"></i>Tambah Laporan
                             </a>
@@ -50,7 +50,8 @@
                                 <p class="text-muted mb-4">
                                     Tidak ada laporan akhir yang ditemukan
                                 </p>
-                                <a href="{{ route('admin.laporans.create') }}" class="btn btn-primary px-4 rounded-pill">
+                                <a href="{{ route('pembimbing.laporans.create') }}"
+                                    class="btn btn-primary px-4 rounded-pill">
                                     <i class="fas fa-plus-circle me-2"></i>Buat Laporan Pertama
                                 </a>
                             </div>
@@ -119,35 +120,15 @@
                                                 </td>
                                                 <td class="pe-4 py-3 text-center">
                                                     <div class="d-flex justify-content-center gap-2">
-
-                                                        @if (auth()->user()->role === 'siswa' && $laporan->status_validasi == 'menunggu')
-                                                            <a href="{{ route('laporans.edit', $laporan->id) }}"
-                                                                class="btn btn-sm btn-outline-secondary rounded-pill px-3"
-                                                                data-bs-toggle="tooltip" title="Edit">
-                                                                <i class="fas fa-edit"></i>
-                                                            </a>
-                                                            <form
-                                                                action="{{ route('admin.laporans.destroy', $laporan->id) }}"
-                                                                method="POST" class="d-inline">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit"
-                                                                    class="btn btn-sm btn-outline-danger rounded-pill px-3"
-                                                                    data-bs-toggle="tooltip" title="Hapus"
-                                                                    onclick="return confirm('Yakin hapus laporan ini?')">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                            </form>
-                                                        @endif
-                                                        @if (auth()->user()->role === 'admin')
-                                                            <a href="{{ route('admin.laporans.show', $laporan->id) }}"
+                                                        @if (auth()->user()->role === 'pembimbing')
+                                                            <a href="{{ route('pembimbing.laporans.show', $laporan->id) }}"
                                                                 class="btn btn-sm btn-outline-primary rounded-pill px-3"
                                                                 data-bs-toggle="tooltip" title="Lihat Detail">
                                                                 <i class="fas fa-eye"></i>
                                                             </a>
                                                             @if ($laporan->status_validasi == 'menunggu')
                                                                 <form
-                                                                    action="{{ route('admin.laporans.validasi', $laporan->id) }}"
+                                                                    action="{{ route('pembimbing.laporans.validasi', $laporan->id) }}"
                                                                     method="POST" class="d-inline">
                                                                     @csrf
                                                                     <input type="hidden" name="status" value="valid">
@@ -173,7 +154,7 @@
                                                                     </span>
                                                                 </button>
                                                                 <form
-                                                                    action="{{ route('admin.laporans.destroy', $laporan->id) }}"
+                                                                    action="{{ route('pembimbing.laporans.destroy', $laporan->id) }}"
                                                                     method="POST" class="d-inline">
                                                                     @csrf
                                                                     @method('DELETE')
@@ -207,7 +188,7 @@
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content border-warning border-3">
                     <form id="formRevisi{{ $laporan->id }}"
-                        action="{{ route('admin.laporans.validasi', $laporan->id) }}" method="POST">
+                        action="{{ route('pembimbing.laporans.validasi', $laporan->id) }}" method="POST">
                         @csrf
                         <input type="hidden" name="status" value="revisi">
 

@@ -155,8 +155,8 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('pembimbing.laporans.index') }}"
-                            class="nav-link {{ request()->is('pembimbing/laporans*') ? 'active' : '' }}">
+                        <a href="{{ route('pembimbing.laporan-harian.index') }}"
+                            class="nav-link {{ request()->is('pembimbing/laporan-harian*') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-file-alt"></i>
                             <p>Log Book Siswa</p>
                         </a>

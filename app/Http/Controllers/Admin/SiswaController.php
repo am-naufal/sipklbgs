@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Pembimbing;
+use App\Models\Penempatan;
 use App\Models\Siswa;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 
@@ -65,7 +68,15 @@ class SiswaController extends Controller
     public function show(Siswa $siswa)
     {
         $siswa->load('user');
-        return view('admin.siswas.show', compact('siswa'));
+        $penempatan = Penempatan::where('siswa_id', $siswa->id)->with('industri')->first();
+
+        return view('admin.siswas.show', compact('siswa', 'penempatan'));
+    }
+    public function showForPembimbing(Siswa $siswa)
+    {
+        $siswa->load('user');
+        $penempatan = Penempatan::where('siswa_id', $siswa->id)->with('industri')->first();
+        return view('pembimbing.siswas.show', compact('siswa', 'penempatan'));
     }
 
     public function edit(Siswa $siswa)
@@ -110,5 +121,14 @@ class SiswaController extends Controller
     {
         $siswa->user->delete(); // otomatis hapus siswa karena relasi cascade
         return Redirect::route('admin.siswas.index')->with('success', 'Siswa berhasil dihapus.');
+    }
+    public function siswaBimbingan()
+    {
+        $pembimbingid = Pembimbing::where('user_id', Auth::user()->id)->first();
+
+        $siswas = Penempatan::where('pembimbing_id', $pembimbingid->id)->with(['siswa.user', 'industri'])->get();
+
+
+        return view('pembimbing.siswas.index', compact('siswas'));
     }
 }
