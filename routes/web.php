@@ -16,6 +16,7 @@ use App\Http\Controllers\Pembimbing\LaporanHarianController as pPembimbingLapora
 use App\Http\Controllers\Pembimbing\LaporanController as PembimbingLaporanController;
 use App\Http\Controllers\Pembimbing\LaporanHarianController as PembimbingLaporanHarianController;
 use App\Http\Controllers\Pembimbing\PenempatanController as PembimbingPenempatanController;
+use App\Http\Controllers\PenilaianController;
 use App\Models\Industri;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -40,17 +41,26 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('siswas', SiswaController::class);
     Route::resource('pembimbings', PembimbingController::class);
     Route::resource('industris', IndustriController::class);
+    //laporans
     Route::resource('laporans', LaporanController::class);
     Route::get('/laporans/download/{laporans}', [LaporanController::class, 'adminDownload'])->name('laporans.download');
     Route::resource('penempatans', PenempatanController::class);
     Route::get('/laporans/show/list/{id}', [LaporanController::class, 'showList'])->name('laporans.show.list');
     Route::post('/laporans/{id}/validasi', [LaporanController::class, 'validasi'])
         ->name('laporans.validasi');
+    //laporan-harian
     Route::resource('laporan-harian', LaporanHarianController::class);
     Route::get('laporan-harian/siswa/{siswa_id}', [LaporanHarianController::class, 'showBySiswa'])->name('laporan-harian.bysiswa');
     Route::post('/laporan-harian/{id}/validasi', [LaporanHarianController::class, 'validasi'])
         ->name('laporan-harian.validasi');
+    //penilaian
+    Route::resource('penilaian', PenilaianController::class)->only(['index', 'show']);
+    Route::get('penilaian/teknis/create', [PenilaianController::class, 'createTeknis'])->name('penilaian.teknis.create');
+    Route::post('penilaian/teknis', [PenilaianController::class, 'storeTeknis'])->name('penilaian.teknis.store');
+    Route::get('penilaian/non-teknis/create', [PenilaianController::class, 'createNonTeknis'])->name('penilaian.nonteknis.create');
+    Route::post('penilaian/non-teknis', [PenilaianController::class, 'storeNonTeknis'])->name('penilaian.nonteknis.store');
 });
+
 
 Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'siswaIndex'])->name('siswa.dashboard');
@@ -82,14 +92,17 @@ Route::middleware(['auth', 'role:pembimbing'])->prefix('pembimbing')->name('pemb
     Route::resource('laporan-harian', PembimbingLaporanHarianController::class);
     Route::resource('laporans', PembimbingLaporanController::class);
     Route::resource('penempatans', PenempatanController::class);
+    //laporan
     Route::get('/laporans/{laporan}', [PembimbingLaporanController::class, 'show'])->name('laporans.show');
     Route::get('/laporans/download/{laporan}', [PembimbingLaporanController::class, 'download'])->name('laporans.download');
     Route::get('/laporans/show/list/{id}', [PembimbingLaporanController::class, 'showList'])->name('laporans.show.list');
     Route::post('/laporans/{id}/validasi', [PembimbingLaporanController::class, 'validasi'])
         ->name('laporans.validasi');
+    //penempatan
     Route::get('/penempatan', [PenempatanController::class, 'index'])->name('penempatan.index');
     Route::get('/siswa-bimbingan', [SiswaController::class, 'siswaBimbingan'])->name('siswas.index');
     Route::get('/siswa-bimbingan/show/{siswa}', [SiswaController::class, 'showForPembimbing'])->name('siswas.show');
+    //laporan-harian
     Route::get('laporan-harian/siswa/{siswa_id}', [PembimbingLaporanHarianController::class, 'showBySiswa'])->name('laporan-harian.bysiswa');
     Route::post('/laporan-harian/{id}/validasi', [PembimbingLaporanHarianController::class, 'validasi'])
         ->name('laporan-harian.validasi');

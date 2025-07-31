@@ -67,6 +67,13 @@
                             <p>Log book siswa</p>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.penilaian.index') }}"
+                            class="nav-link {{ request()->is('admin/penilaian*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-clipboard-list"></i>
+                            <p>Penilaian</p>
+                        </a>
+                    </li>
 
 
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
