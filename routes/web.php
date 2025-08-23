@@ -54,7 +54,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/laporan-harian/{id}/validasi', [LaporanHarianController::class, 'validasi'])
         ->name('laporan-harian.validasi');
     //penilaian
-    Route::resource('penilaian', PenilaianController::class)->only(['index', 'show']);
+    Route::resource('penilaian', PenilaianController::class);
     Route::get('penilaian/teknis/create', [PenilaianController::class, 'createTeknis'])->name('penilaian.teknis.create');
     Route::post('penilaian/teknis', [PenilaianController::class, 'storeTeknis'])->name('penilaian.teknis.store');
     Route::get('penilaian/non-teknis/create', [PenilaianController::class, 'createNonTeknis'])->name('penilaian.nonteknis.create');

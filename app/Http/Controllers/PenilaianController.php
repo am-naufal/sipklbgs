@@ -24,7 +24,8 @@ class PenilaianController extends Controller
     // Form input nilai teknis untuk semua siswa
     public function createTeknis()
     {
-        $siswas = Siswa::with(['industri', 'penilaian'])
+
+        $siswas = Penempatan::with(['industri', 'siswa', 'pembimbing'])
             ->whereHas('industri')
             ->get();
 
@@ -34,6 +35,7 @@ class PenilaianController extends Controller
     // Simpan semua nilai teknis
     public function storeTeknis(Request $request)
     {
+
         $validated = $request->validate([
             'nilai.*.siswa_id' => 'required|exists:siswas,id',
             'nilai.*.nilai_teknis' => 'required|numeric|min:0|max:100'
@@ -43,8 +45,8 @@ class PenilaianController extends Controller
             Penilaian::updateOrCreate(
                 [
                     'siswa_id' => $data['siswa_id'],
-                    'industri_id' => Siswa::find($data['siswa_id'])->industri_id,
-                    'pembimbing_id' => auth()->user()->pembimbing->id
+                    'industri_id' => Penempatan::find($data['siswa_id'])->industri_id,
+                    'pembimbing_id' => Penempatan::find($data['siswa_id'])->pembimbing_id
                 ],
                 ['nilai_teknis' => $data['nilai_teknis']]
             );
@@ -57,11 +59,13 @@ class PenilaianController extends Controller
     // Form input nilai non-teknis untuk semua siswa
     public function createNonTeknis()
     {
-        $siswas = Siswa::with(['industri', 'penilaian'])
+
+        $siswas = Penempatan::with(['industri', 'siswa', 'pembimbing'])
             ->whereHas('industri')
             ->get();
 
-        return view('admin.penilaian.create-non-teknis', compact('siswas'));
+
+        return view('admin.penilaian.create-nonteknis', compact('siswas'));
     }
 
     // Simpan semua nilai non-teknis
@@ -81,8 +85,8 @@ class PenilaianController extends Controller
             Penilaian::updateOrCreate(
                 [
                     'siswa_id' => $data['siswa_id'],
-                    'industri_id' => Siswa::find($data['siswa_id'])->industri_id,
-                    'pembimbing_id' => auth()->user()->pembimbing->id
+                    'industri_id' => Penempatan::find($data['siswa_id'])->industri_id,
+                    'pembimbing_id' => Penempatan::find($data['siswa_id'])->pembimbing_id,
                 ],
                 [
                     'disiplin' => $data['disiplin'],
@@ -99,6 +103,38 @@ class PenilaianController extends Controller
             ->with('success', 'Nilai non-teknis berhasil disimpan');
     }
 
+    // Form edit nilai siswa
+    public function edit(Penilaian $penilaian)
+    {
+        $penilaian->load('siswa', 'industri', 'pembimbing');
+        if (!$penilaian) {
+            return redirect()->route('admin.penilaian.index')
+                ->with('error', 'Penilaian untuk siswa ini belum ada');
+        }
+        return view('admin.penilaian.edit', compact('penilaian'));
+    }
+
+    // Update nilai siswa
+    public function update(Request $request, Penilaian $penilaian)
+    {
+        $validated = $request->validate([
+            'siswa_id' => 'required|exists:siswas,id',
+            'pembimbing_id' => 'required|exists:pembimbings,id',
+            'industri_id' => 'required|exists:industris,id',
+            'nilai_teknis' => 'required|numeric|min:0|max:100',
+            'disiplin' => 'required|numeric|min:0|max:100',
+            'kerjasama' => 'required|numeric|min:0|max:100',
+            'inisiatif' => 'required|numeric|min:0|max:100',
+            'tanggung_jawab' => 'required|numeric|min:0|max:100',
+            'kebersihan' => 'required|numeric|min:0|max:100',
+            'catatan' => 'nullable|string'
+        ]);
+
+
+        $penilaian->update($validated);
+        return redirect()->route('admin.penilaian.index')
+            ->with('success', 'Penilaian berhasil diperbarui');
+    }
     // Detail nilai per siswa
     public function show(Siswa $siswa)
     {

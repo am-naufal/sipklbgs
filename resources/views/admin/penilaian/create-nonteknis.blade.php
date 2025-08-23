@@ -33,8 +33,8 @@
                                 @endphp
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $siswa->nama }}</td>
-                                    <td>{{ $siswa->kelas }}</td>
+                                    <td>{{ $siswa->siswa->nama }}</td>
+                                    <td>{{ $siswa->siswa->kelas }}</td>
                                     <td>{{ $siswa->industri->nama ?? '-' }}</td>
                                     <td>
                                         <input type="number" class="form-control"

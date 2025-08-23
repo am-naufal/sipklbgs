@@ -1,175 +1,116 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Siswa')
+@section('title', 'Edit Penilaian')
 
 @section('content')
-    <div class="container mx-auto p-4">
-        <div class="card card-primary card-outline">
-            <div class="card-header">
-                <div class="card-title">
-                    Edit Siswa
-                </div>
-            </div>
 
-            <form action="{{ route('admin.siswas.update', $siswa) }}" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="name" class="form-label">Nama Akun</label>
-                            <input type="text" name="name" id="name" class="form-control"
-                                value="{{ old('name', $siswa->user->name) }}">
-                            @error('name')
-                                <div class="text-danger small">{{ $message }}</div>
-                            @enderror
+    <div class="container">
+        <h2>Edit Nilai Siswa PKL</h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" action="{{ route('admin.penilaian.update', $penilaian) }}">
+                    @csrf
+                    @method('PUT')
+
+                    <!-- Informasi Siswa -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><strong>Nama Siswa:</strong></label>
+                                <p class="form-control-plaintext">{{ $penilaian->siswa->nama }}</p>
+                            </div>
                         </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="email" class="form-label">Email Akun</label>
-                            <input type="email" name="email" id="email" class="form-control"
-                                value="{{ old('email', $siswa->user->email) }}">
-                            @error('email')
-                                <div class="text-danger small">{{ $message }}</div>
-                            @enderror
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><strong>Kelas:</strong></label>
+                                <p class="form-control-plaintext">{{ $penilaian->siswa->kelas }}</p>
+                            </div>
                         </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="password" class="form-label">Password (isi jika ingin mengubah)</label>
-                            <input type="password" name="password" id="password" class="form-control">
-                            @error('password')
-                                <div class="text-danger small">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
-                            <input type="password" name="password_confirmation" id="password_confirmation"
-                                class="form-control">
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="nama" class="form-label">Nama Lengkap</label>
-                            <input type="text" name="nama" id="nama" class="form-control"
-                                value="{{ old('nama', $siswa->nama) }}">
-                            @error('nama')
-                                <div class="text-danger small">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
-                            <input type="text" name="tempat_lahir" id="tempat_lahir" class="form-control"
-                                value="{{ old('tempat_lahir', $siswa->tempat_lahir) }}">
-                            @error('tempat_lahir')
-                                <div class="text-danger small">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
-                            <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control"
-                                value="{{ old('tanggal_lahir', $siswa->tanggal_lahir) }}">
-                            @error('tanggal_lahir')
-                                <div class="text-danger small">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="nis" class="form-label">NIS</label>
-                            <input type="text" name="nis" id="nis" class="form-control"
-                                value="{{ old('nis', $siswa->nis) }}">
-                            @error('nis')
-                                <div class="text-danger small">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="nisn" class="form-label">NISN</label>
-                            <input type="text" name="nisn" id="nisn" class="form-control"
-                                value="{{ old('nisn', $siswa->nisn) }}">
-                            @error('nisn')
-                                <div class="text-danger small">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="kelas" class="form-label">Kelas</label>
-                            <input type="text" name="kelas" id="kelas" class="form-control"
-                                value="{{ old('kelas', $siswa->kelas) }}">
-                            @error('kelas')
-                                <div class="text-danger small">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="jurusan" class="form-label">Jurusan</label>
-                            <select name="jurusan" id="jurusan" class="form-select">
-                                <option value="">Pilih Jurusan</option>
-                                <option value="tb" @selected(old('jurusan', $siswa->jurusan) == 'tb')>Tata Boga</option>
-                                <option value="mm" @selected(old('jurusan', $siswa->jurusan) == 'mm')>Multimedia</option>
-                                <option value="aphp" @selected(old('jurusan', $siswa->jurusan) == 'aphp')>Agribisnis Pengolahan Hasil Pertanian
-                                </option>
-                            </select>
-                            @error('jurusan')
-                                <div class="text-danger small">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-12 mb-3">
-                            <label for="alamat" class="form-label">Alamat</label>
-                            <textarea name="alamat" id="alamat" class="form-control">{{ old('alamat', $siswa->alamat) }}</textarea>
-                            @error('alamat')
-                                <div class="text-danger small">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <label for="status_pkl" class="form-label">Status PKL</label>
-                            <select name="status_pkl" id="status_pkl" class="form-select">
-                                <option value="belum_mulai" @selected(old('status_pkl', $siswa->status_pkl) == 'belum_mulai')>Belum Mulai</option>
-                                <option value="sedang_berjalan" @selected(old('status_pkl', $siswa->status_pkl) == 'sedang_berjalan')>Sedang Berjalan</option>
-                                <option value="selesai" @selected(old('status_pkl', $siswa->status_pkl) == 'selesai')>Selesai</option>
-                            </select>
-                            @error('status_pkl')
-                                <div class="text-danger small">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <label for="tanggal_mulai" class="form-label">Tanggal Mulai PKL</label>
-                            <input type="date" name="tanggal_mulai" id="tanggal_mulai" class="form-control"
-                                value="{{ old('tanggal_mulai', $siswa->tanggal_mulai) }}">
-                            @error('tanggal_mulai')
-                                <div class="text-danger small">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <label for="tanggal_selesai" class="form-label">Tanggal Selesai PKL</label>
-                            <input type="date" name="tanggal_selesai" id="tanggal_selesai" class="form-control"
-                                value="{{ old('tanggal_selesai', $siswa->tanggal_selesai) }}">
-                            @error('tanggal_selesai')
-                                <div class="text-danger small">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <label for="tahun_angkatan" class="form-label">Tahun Angkatan</label>
-                            <input type="number" name="tahun_angkatan" id="tahun_angkatan" class="form-control"
-                                value="{{ old('tahun_angkatan', $siswa->tahun_angkatan) }}">
-                            @error('tahun_angkatan')
-                                <div class="text-danger small">{{ $message }}</div>
-                            @enderror
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><strong>Instansi:</strong></label>
+                                <p class="form-control-plaintext">{{ $penilaian->industri->nama ?? '-' }}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    <input type="text" class="form-control" id="siswa_id" name="siswa_id"
+                        value="{{ $penilaian->siswa_id }}" hidden>
+                    <input type="text" class="form-control" id="pembimbing_id" name="pembimbing_id"
+                        value="{{ $penilaian->pembimbing_id }}" hidden>
+                    <input type="text" class="form-control" id="industri_id" name="industri_id"
+                        value="{{ $penilaian->industri_id }}" hidden>
 
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Update</button>
-                    <a href="{{ route('admin.siswas.index') }}" class="btn btn-secondary ms-2">Batal</a>
-                </div>
-            </form>
+
+
+
+                    <!-- Nilai Teknis -->
+                    <div class="form-group mb-3">
+                        <label for="nilai_teknis">Nilai Teknis</label>
+                        <input type="number" class="form-control" id="nilai_teknis" name="nilai_teknis"
+                            value="{{ old('nilai_teknis', $penilaian->nilai_teknis) }}" min="0" max="100"
+                            required>
+                        <small class="form-text text-muted">Nilai antara 0-100</small>
+                    </div>
+
+                    <!-- Nilai Non-Teknis -->
+                    <h5 class="mt-4 mb-3">Nilai Non-Teknis</h5>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="disiplin">Disiplin</label>
+                                <input type="number" class="form-control" id="disiplin" name="disiplin"
+                                    value="{{ old('disiplin', $penilaian->disiplin) }}" min="0" max="100"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="kerjasama">Kerjasama</label>
+                                <input type="number" class="form-control" id="kerjasama" name="kerjasama"
+                                    value="{{ old('kerjasama', $penilaian->kerjasama) }}" min="0" max="100"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="inisiatif">Inisiatif</label>
+                                <input type="number" class="form-control" id="inisiatif" name="inisiatif"
+                                    value="{{ old('inisiatif', $penilaian->inisiatif) }}" min="0" max="100"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="tanggung_jawab">Tanggung Jawab</label>
+                                <input type="number" class="form-control" id="tanggung_jawab" name="tanggung_jawab"
+                                    value="{{ old('tanggung_jawab', $penilaian->tanggung_jawab) }}" min="0"
+                                    max="100" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="kebersihan">Kebersihan</label>
+                                <input type="number" class="form-control" id="kebersihan" name="kebersihan"
+                                    value="{{ old('kebersihan', $penilaian->kebersihan) }}" min="0" max="100"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Catatan -->
+                    <div class="form-group mb-4">
+                        <label for="catatan">Catatan</label>
+                        <textarea class="form-control" id="catatan" name="catatan" rows="3"
+                            placeholder="Tambahkan catatan tentang penilaian siswa">{{ old('catatan', $penilaian->catatan) }}</textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Update Nilai</button>
+                    <a href="{{ route('admin.penilaian.index') }}" class="btn btn-secondary">Kembali</a>
+                </form>
+            </div>
         </div>
     </div>
+
 @endsection

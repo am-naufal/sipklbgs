@@ -30,25 +30,32 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($siswas as $siswa)
+
+                        @foreach ($penilaian as $siswa)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $siswa->nama }}</td>
-                                <td>{{ $siswa->kelas }}</td>
+                                <td>{{ $siswa->siswa->nama }}</td>
+                                <td>{{ $siswa->siswa->kelas }}</td>
                                 <td>{{ $siswa->industri->nama ?? '-' }}</td>
                                 <td>
-                                    @if ($siswa->penilaian && $siswa->penilaian->nilai_teknis)
-                                        {{ $siswa->penilaian->nilai_teknis }} ({{ $siswa->penilaian->kualifikasiTeknis() }})
+                                    @if ($siswa->nilai_teknis)
+                                        {{ $siswa->nilai_teknis }} ({{ $siswa->kualifikasiTeknis() }})
                                     @else
                                         <span class="text-danger">Belum dinilai</span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if ($siswa->penilaian && $siswa->penilaian->disiplin)
+                                    @if ($siswa->disiplin)
                                         <span class="badge bg-primary">D:
-                                            {{ $siswa->penilaian->kualifikasiNonTeknis($siswa->penilaian->disiplin) }}</span>
+                                            {{ $siswa->kualifikasiNonTeknis($siswa->disiplin) }}</span>
                                         <span class="badge bg-success">K:
-                                            {{ $siswa->penilaian->kualifikasiNonTeknis($siswa->penilaian->kerjasama) }}</span>
+                                            {{ $siswa->kualifikasiNonTeknis($siswa->kerjasama) }}</span>
+                                        <span class="badge bg-warning">I:
+                                            {{ $siswa->kualifikasiNonTeknis($siswa->inisiatif) }}</span>
+                                        <span class="badge bg-info">T:
+                                            {{ $siswa->kualifikasiNonTeknis($siswa->tanggung_jawab) }}</span>
+                                        <span class="badge bg-secondary">Keb:
+                                            {{ $siswa->kualifikasiNonTeknis($siswa->kebersihan) }}</span>
                                     @else
                                         <span class="text-danger">Belum dinilai</span>
                                     @endif
@@ -56,6 +63,9 @@
                                 <td>
                                     <a href="{{ route('admin.penilaian.show', $siswa) }}"
                                         class="btn btn-sm btn-info">Detail</a>
+                                    <a href="{{ route('admin.penilaian.edit', $siswa) }}"
+                                        class="btn btn-sm btn-warning">Edit</a>
+
                                 </td>
                             </tr>
                         @endforeach

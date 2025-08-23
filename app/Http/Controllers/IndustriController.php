@@ -22,24 +22,28 @@ class IndustriController extends Controller
 
     public function store(Request $request)
     {
+
         $validated = $request->validate([
             'nama' => 'required',
             'alamat' => 'required',
+            'email_industri' => 'required',
             'telepon' => 'required',
             'nama_pj' => 'required',
+            'bidang_usaha' => 'required',
+            'deskripsi' => 'required',
             'jabatan_pj' => 'required',
             'telepon_pj' => 'required',
         ]);
         $makeid = 'ind' . (Industri::latest()->first()->id ?? 0) + 1;
         $User = User::create([
             'name' => $request->nama,
-            'email' => $request->email,
+            'email' => $request->email_industri,
             'password' => Hash::make('password'),
             'role' => 'industri',
             'industri_id' => $makeid,
         ]);
-        dd($User);
-        $Industri = Industri::create($validated);
+        // dd($validated);
+        $Industri = new Industri($validated);
         $Industri->user_id = $User->id;
         $Industri->save();
 
@@ -56,6 +60,7 @@ class IndustriController extends Controller
         $validated = $request->validate([
             'nama' => 'required',
             'alamat' => 'required',
+            'email' => 'required',
             'telepon' => 'required',
             'nama_pj' => 'required',
             'jabatan_pj' => 'required',

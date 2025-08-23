@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Siswa;
 use App\Models\Industri;
 use App\Models\Pembimbing;
+use App\Models\Penempatan;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -17,32 +18,6 @@ class DummyDataSeeder extends Seeder
      */
     public function run(): void
     {
-        // Dummy user untuk relasi siswa
-        $user = User::create([
-            'name' => 'Siswa Dummy',
-            'email' => 'siswa@pkl.com',
-            'password' => Hash::make('password'),
-            'role' => 'siswa'
-        ]);
-
-        // Dummy Siswa
-        \App\Models\Siswa::create([
-            'user_id' => $user->id,
-            'nama' => 'Budi Santoso',
-            'tempat_lahir' => 'Bandung',
-            'tanggal_lahir' => '2006-01-01',
-            'nis' => '123456',
-            'nisn' => '654321',
-            'kelas' => 'XII RPL 1',
-            'jurusan' => 'tb',
-            'alamat' => 'Jl. Mawar No. 1',
-            'status_pkl' => 'belum_mulai',
-            'tanggal_mulai' => null,
-            'tanggal_selesai' => null,
-            'tahun_angkatan' => 2022,
-        ]);
-
-        // User Industri
         $industriUser = User::create([
             'name' => 'PT Maju Jaya',
             'email' => 'industri@pkl.com',
@@ -51,7 +26,7 @@ class DummyDataSeeder extends Seeder
         ]);
 
         // Industri
-        Industri::create([
+        $industri = Industri::create([
             'user_id' => $industriUser->id,
             'nama' => 'PT Maju Jaya',
             'alamat' => 'Jl. Industri No. 123',
@@ -72,7 +47,7 @@ class DummyDataSeeder extends Seeder
             'role' => 'pembimbing'
         ]);
 
-        Pembimbing::create([
+        $pembimbing = Pembimbing::create([
             'user_id' => $pembimbingUser->id,
             'nama_lengkap' => 'Siti Aminah',
             'niy' => '198765',
@@ -82,17 +57,81 @@ class DummyDataSeeder extends Seeder
             'alamat' => 'Jl. Melati No. 3',
         ]);
 
+        // Admin Sekolah
         User::create([
             'name' => 'Admin Sekolah',
             'email' => 'admin@pkl.com',
             'password' => Hash::make('password'),
             'role' => 'admin'
         ]);
+
+        // Kepala Sekolah
         User::create([
             'name' => 'Kepala Sekolah',
             'email' => 'kepalasekolah@pkl.com',
             'password' => Hash::make('password'),
             'role' => 'kepala_sekolah'
+        ]);
+
+        // Dummy Siswa
+        $siswaUser1 = User::create([
+            'name' => 'Ahmad Siswa',
+            'email' => 'ahmad.siswa@pkl.com',
+            'password' => Hash::make('password'),
+            'role' => 'siswa'
+        ]);
+        $siswaUser2 = User::create([
+            'name' => 'Budi Siswa',
+            'email' => 'budi.siswa@pkl.com',
+            'password' => Hash::make('password'),
+            'role' => 'siswa'
+        ]);
+
+        Siswa::create([
+            'user_id' => $siswaUser1->id,
+            'nama' => 'Ahmad Siswa',
+            'nisn' => '99887766',
+            'kelas' => 'XII RPL 1',
+            'tempat_lahir' => 'Bandung',
+            'tanggal_lahir' => '2007-01-01',
+            'nis' => '123456',
+            'jurusan' => 'mm',
+            'alamat' => 'Jl. Kenanga No. 5',
+        ]);
+        Siswa::create([
+            'user_id' => $siswaUser2->id,
+            'nama' => 'Budi Siswa',
+            'nisn' => '99887767',
+            'kelas' => 'XII RPL 2',
+            'tempat_lahir' => 'Bandung',
+            'tanggal_lahir' => '2007-02-02',
+            'nis' => '123457',
+            'jurusan' => 'tb',
+            'alamat' => 'Jl. Mawar No. 7',
+        ]);
+        // Dummy Laporan Harian
+        $siswa1 = Siswa::where('user_id', $siswaUser1->id)->first();
+        $siswa2 = Siswa::where('user_id', $siswaUser2->id)->first();
+
+
+        Penempatan::create([
+            'siswa_id' => $siswa1->id,
+            'industri_id' => $industri->id,
+            'pembimbing_id' => $pembimbing->id,
+            'status' => 'disetujui',
+            'tanggal_penempatan' => now(),
+            'tanggal_selesai' => now()->addDays(30),
+            'keterangan' => 'Penempatan aktif',
+        ]);
+
+        Penempatan::create([
+            'siswa_id' => $siswa2->id,
+            'industri_id' => $industri->id,
+            'pembimbing_id' => $pembimbing->id,
+            'status' => 'disetujui',
+            'tanggal_penempatan' => now(),
+            'tanggal_selesai' => now()->addDays(30),
+            'keterangan' => 'Penempatan aktif',
         ]);
     }
 }

@@ -32,10 +32,34 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="bidang_usaha" class="form-label">Bidang Usaha</label>
+                        <input type="text" name="bidang_usaha" id="bidang_usaha" class="form-control"
+                            value="{{ old('bidang_usaha') }}">
+                        @error('bidang_usaha')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
+                        <label for="deskripsi" class="form-label">Deskripsi</label>
+                        <textarea name="deskripsi" id="deskripsi" class="form-control">{{ old('deskripsi') }}</textarea>
+                        @error('deskripsi')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3">
                         <label for="telepon" class="form-label">Telepon</label>
                         <input type="text" name="telepon" id="telepon" class="form-control"
                             value="{{ old('telepon') }}">
                         @error('telepon')
+                            <div class="text-danger small">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email_industri" class="form-label">Email Industri</label>
+                        <input type="email_industri" name="email_industri" id="email_industri" class="form-control"
+                            value="{{ old('email_industri') }}">
+                        @error('email_industri')
                             <div class="text-danger small">{{ $message }}</div>
                         @enderror
                     </div>
