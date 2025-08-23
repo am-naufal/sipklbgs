@@ -136,12 +136,16 @@ class PenilaianController extends Controller
             ->with('success', 'Penilaian berhasil diperbarui');
     }
     // Detail nilai per siswa
-    public function show(Siswa $siswa)
+    public function show(Penilaian $penilaian)
     {
-        $penilaian = Penilaian::where('siswa_id', $siswa->id)
-            ->with(['siswa', 'industri', 'pembimbing'])
-            ->first();
 
-        return view('admin.penilaian.show', compact('siswa', 'penilaian'));
+
+
+        $penilaian->load('siswa', 'industri', 'pembimbing');
+        if (!$penilaian) {
+            return redirect()->route('admin.penilaian.index')
+                ->with('error', 'Penilaian untuk siswa ini belum ada');
+        }
+        return view('admin.penilaian.show', compact('penilaian'));
     }
 }
