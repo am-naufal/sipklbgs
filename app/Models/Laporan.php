@@ -24,7 +24,7 @@ class Laporan extends Model
 
     public function getStatusLabelAttribute()
     {
-        $status = $this->status;
+        $status = $this->status_validasi;
         switch ($status) {
             case 'draft':
                 return ['Draft', 'secondary', 'file'];

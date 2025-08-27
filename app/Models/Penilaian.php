@@ -34,6 +34,11 @@ class Penilaian extends Model
         return $this->belongsTo(Pembimbing::class);
     }
 
+    public function penempatan()
+    {
+        return $this->belongsTo(Penempatan::class, 'siswa_id', 'siswa_id');
+    }
+
     // Helper method untuk mendapatkan kualifikasi
     public function kualifikasiTeknis()
     {

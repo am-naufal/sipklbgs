@@ -26,4 +26,15 @@ class Siswa extends Model
     {
         return $this->hasMany(LaporanHarian::class);
     }
+
+    public function laporans()
+    {
+        return $this->hasMany(Laporan::class);
+    }
+
+    // Alias for laporans to maintain compatibility with views
+    public function laporan()
+    {
+        return $this->laporans();
+    }
 }

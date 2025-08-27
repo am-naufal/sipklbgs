@@ -330,7 +330,11 @@ class LaporanController extends Controller
             abort(404);
         }
 
-        return Storage::disk('public')->download($laporans->file_path);
+        $filePath = storage_path('app/public/' . $laporans->file_path);
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+        return response()->download($filePath);
     }
     public function showList($id)
     {

@@ -73,7 +73,7 @@
             <div class="col-md-6 col-xl-3">
                 <div class="card stat-card p-4 text-center">
                     <i class="fas fa-chart-line stat-icon mb-3"></i>
-                    <h3 class="stat-number">{{ number_format($rataRataNilai, 2) }}</h3>
+                    <h3 class="stat-number">{{ number_format($nilaiRataRata, 2) }}</h3>
                     <p class="stat-label">Rata-rata Nilai Akhir</p>
                 </div>
             </div>
@@ -156,7 +156,7 @@
                                 </tr>
                                 <tr>
                                     <td>Total</td>
-                                    <td class="fw-bold text-primary">{{ number_format($rataRataNilai, 2) }}</td>
+                                    <td class="fw-bold text-primary">{{ number_format($nilaiRataRata, 2) }}</td>
                                     <td class="fw-bold">{{ $totalPenilaian }}</td>
                                 </tr>
                             </tbody>

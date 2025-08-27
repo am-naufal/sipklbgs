@@ -67,18 +67,63 @@ class DashboardController extends Controller
 
     public function laporanStatistik()
     {
-        // Statistik laporan untuk kepala sekolah
-        $laporanPerBulan = Laporan::selectRaw('MONTH(created_at) as bulan, COUNT(*) as total')
-            ->groupBy('bulan')
+        // Statistik dasar
+        $totalLaporanHarian = LaporanHarian::count();
+        $totalLaporanAkhir = Laporan::count();
+        $totalSiswas = Siswa::count();
+
+        // Rasio laporan per siswa
+        $rasioLaporanPerSiswa = $totalSiswas > 0 ? ($totalLaporanHarian + $totalLaporanAkhir) / $totalSiswas : 0;
+
+        // Persentase kelengkapan (asumsi: setiap siswa harus punya minimal 1 laporan akhir dan beberapa laporan harian)
+        $siswaDenganLaporan = Siswa::whereHas('laporan')->orWhereHas('laporanHarian')->count();
+        $persentaseKelengkapan = $totalSiswas > 0 ? ($siswaDenganLaporan / $totalSiswas) * 100 : 0;
+
+        // Status laporan harian
+        $statusLaporanHarian = [
+            'diterima' => LaporanHarian::where('status_validasi', 'diterima')->count(),
+            'ditolak' => LaporanHarian::where('status_validasi', 'ditolak')->count(),
+            'menunggu' => LaporanHarian::where('status_validasi', 'menunggu')->orWhereNull('status_validasi')->count()
+        ];
+
+        // Status laporan akhir
+        $statusLaporanAkhir = [
+            'diterima' => Laporan::where('status_validasi', 'diterima')->count(),
+            'ditolak' => Laporan::where('status_validasi', 'ditolak')->count(),
+            'menunggu' => Laporan::where('status_validasi', 'menunggu')->orWhereNull('status_validasi')->count()
+        ];
+
+        // Tren bulanan
+        $trenBulanan = [];
+        $months = range(1, 12);
+        foreach ($months as $month) {
+            $laporanHarianCount = LaporanHarian::whereMonth('created_at', $month)->count();
+            $laporanAkhirCount = Laporan::whereMonth('created_at', $month)->count();
+
+            $trenBulanan[] = [
+                'bulan' => date('F', mktime(0, 0, 0, $month, 1)),
+                'laporan_harian' => $laporanHarianCount,
+                'laporan_akhir' => $laporanAkhirCount,
+                'total' => $laporanHarianCount + $laporanAkhirCount,
+                'trend' => 'stabil' // Simple trend calculation
+            ];
+        }
+
+        // Top contributors
+        $topContributors = Siswa::withCount(['laporanHarian', 'laporans'])
+            ->orderByRaw('(laporan_harian_count + laporans_count) DESC')
+            ->limit(10)
             ->get();
 
-        $laporanHarianPerBulan = LaporanHarian::selectRaw('MONTH(created_at) as bulan, COUNT(*) as total')
-            ->groupBy('bulan')
-            ->get();
-
-        return view('kepala_sekolah.laporan-statistik', compact(
-            'laporanPerBulan',
-            'laporanHarianPerBulan'
+        return view('kepala_sekolah.laporan_statistik', compact(
+            'totalLaporanHarian',
+            'totalLaporanAkhir',
+            'rasioLaporanPerSiswa',
+            'persentaseKelengkapan',
+            'statusLaporanHarian',
+            'statusLaporanAkhir',
+            'trenBulanan',
+            'topContributors'
         ));
     }
 
@@ -136,11 +181,48 @@ class DashboardController extends Controller
         }
         $distribusiCollection = $distribusiCollection->sortBy('range_nilai');
 
-        return view('kepala_sekolah.penilaian-overview', compact(
+        // Calculate additional statistics for the view
+        $rataRataTeknis = Penilaian::avg('nilai_teknis') ?? 0;
+        $totalTeknis = Penilaian::whereNotNull('nilai_teknis')->count();
+        $totalPenilaian = Penilaian::count();
+
+        // Calculate average non-technical score using the model method
+        $totalNonTeknis = 0;
+        $rataRataNonTeknis = 0;
+        $penilaiansWithNonTeknis = Penilaian::where(function ($query) {
+            $query->whereNotNull('disiplin')
+                ->orWhereNotNull('kerjasama')
+                ->orWhereNotNull('inisiatif')
+                ->orWhereNotNull('tanggung_jawab')
+                ->orWhereNotNull('kebersihan');
+        })->get();
+
+        if ($penilaiansWithNonTeknis->count() > 0) {
+            $totalNonTeknis = $penilaiansWithNonTeknis->count();
+            $sumNonTeknis = 0;
+            foreach ($penilaiansWithNonTeknis as $penilaian) {
+                $sumNonTeknis += $penilaian->rataRataNonTeknis() ?? 0;
+            }
+            $rataRataNonTeknis = $sumNonTeknis / $totalNonTeknis;
+        }
+
+        // Get top performers - get all and sort by calculated final score
+        $allPenilaians = Penilaian::with(['siswa', 'penempatan.industri'])->get();
+        $topPerformers = $allPenilaians->sortByDesc(function ($penilaian) {
+            return $penilaian->nilaiAkhir() ?? 0;
+        })->take(10);
+
+        return view('kepala_sekolah.penilaian_overview', compact(
             'nilaiRataRata',
             'nilaiTertinggi',
             'nilaiTerendah',
-            'distribusiCollection'
+            'distribusiNilai',
+            'rataRataTeknis',
+            'totalTeknis',
+            'rataRataNonTeknis',
+            'totalNonTeknis',
+            'topPerformers',
+            'totalPenilaian'
         ));
     }
 }
