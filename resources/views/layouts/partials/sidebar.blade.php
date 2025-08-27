@@ -178,6 +178,40 @@
                 </ul>
 
             </nav>
+        @elseif (Auth::user()->role == 'kepala_sekolah')
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                    data-accordion="false">
+                    <li class="nav-item">
+                        <a href="{{ route('kepala_sekolah.dashboard') }}"
+                            class="nav-link {{ request()->is('kepala-sekolah/dashboard') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('kepala_sekolah.penilaian.overview') }}"
+                            class="nav-link {{ request()->is('kepala-sekolah/penilaian-overview') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-chart-bar"></i>
+                            <p>Overview Penilaian</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('kepala_sekolah.laporan.statistik') }}"
+                            class="nav-link {{ request()->is('kepala-sekolah/laporan-statistik') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-chart-line"></i>
+                            <p>Statistik Laporan</p>
+                        </a>
+                    </li>
+
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                        @csrf
+                        <button type="submit"> <i class="nav-icon fas fa-sign-out-alt"></i> Logout</button>
+                    </form>
+
+                </ul>
+
+            </nav>
         @endif
     </div>
 </aside>

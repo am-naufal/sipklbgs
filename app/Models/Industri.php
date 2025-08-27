@@ -23,4 +23,9 @@ class Industri extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function penempatans()
+    {
+        return $this->hasMany(Penempatan::class);
+    }
 }

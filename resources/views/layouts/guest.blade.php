@@ -114,7 +114,7 @@
                             <a class="btn btn-outline-light ms-2" href="{{ route('pembimbing.dashboard') }}">Dashboard
                                 Pembimbing</a>
                         @elseif($role === 'kepala_sekolah')
-                            <a class="btn btn-outline-light ms-2" href="{{ route('kepala-sekolah.dashboard') }}">Dashboard
+                            <a class="btn btn-outline-light ms-2" href="{{ route('kepala_sekolah.dashboard') }}">Dashboard
                                 Kepala Sekolah</a>
                         @elseif($role === 'industri')
                             <a class="btn btn-outline-light ms-2" href="{{ route('industri.dashboard') }}">Dashboard

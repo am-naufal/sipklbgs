@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\KepalaSekolah\DashboardController as KepalaSekolahDashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
@@ -106,6 +107,13 @@ Route::middleware(['auth', 'role:pembimbing'])->prefix('pembimbing')->name('pemb
     Route::get('laporan-harian/siswa/{siswa_id}', [PembimbingLaporanHarianController::class, 'showBySiswa'])->name('laporan-harian.bysiswa');
     Route::post('/laporan-harian/{id}/validasi', [PembimbingLaporanHarianController::class, 'validasi'])
         ->name('laporan-harian.validasi');
+});
+
+// Routes khusus Kepala Sekolah
+Route::middleware(['auth', 'role:kepala_sekolah'])->prefix('kepala-sekolah')->name('kepala_sekolah.')->group(function () {
+    Route::get('/dashboard', [KepalaSekolahDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/laporan-statistik', [KepalaSekolahDashboardController::class, 'laporanStatistik'])->name('laporan.statistik');
+    Route::get('/penilaian-overview', [KepalaSekolahDashboardController::class, 'penilaianOverview'])->name('penilaian.overview');
 });
 
 require __DIR__ . '/auth.php';
